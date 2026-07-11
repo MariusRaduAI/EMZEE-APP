@@ -148,12 +148,13 @@ export function FloralForm({ clientId }: { clientId: string }) {
   );
 }
 
-/* -------- Paletă (generator tip coolors) -------- */
+/* -------- Paletă (compactă) -------- */
 type Col = { hex: string; name?: string };
 function PaletteBuilder({ palette, onChange }: { palette: Col[]; onChange: (p: Col[]) => void }) {
   const [hex, setHex] = useState("#9caf88");
   const [genIdx, setGenIdx] = useState(0);
-  const [showPicker, setShowPicker] = useState(false);
+  const [openRec, setOpenRec] = useState(false);
+  const [openLib, setOpenLib] = useState(false);
 
   const normalize = (v: string) => {
     let h = v.trim();
@@ -163,75 +164,69 @@ function PaletteBuilder({ palette, onChange }: { palette: Col[]; onChange: (p: C
   };
   const has = (h: string) => palette.some((c) => c.hex.toLowerCase() === h.toLowerCase());
   const addColor = (h: string, name?: string) => { if (has(h)) return; onChange([...palette, { hex: h.toLowerCase(), name: name || nearestName(h) }]); };
-  const applyPalette = (colors: string[]) => onChange(colors.map((h) => ({ hex: h.toLowerCase(), name: nearestName(h) })));
+  const applyPalette = (colors: string[]) => onChange([...palette, ...colors.filter((h) => !has(h)).map((h) => ({ hex: h.toLowerCase(), name: nearestName(h) }))]);
   const remove = (i: number) => onChange(palette.filter((_, idx) => idx !== i));
-  const generate = () => { const i = (genIdx + 1 + Math.floor(Math.random() * (CURATED_PALETTES.length - 1))) % CURATED_PALETTES.length; setGenIdx(i); applyPalette(CURATED_PALETTES[i].colors); };
+  const generate = () => { const i = (genIdx + 1 + Math.floor(Math.random() * (CURATED_PALETTES.length - 1))) % CURATED_PALETTES.length; setGenIdx(i); onChange(CURATED_PALETTES[i].colors.map((h) => ({ hex: h.toLowerCase(), name: nearestName(h) }))); };
 
   return (
-    <div className="space-y-5">
-      {/* Paleta curentă */}
+    <div className="space-y-3">
+      {/* Paleta curentă (compactă) */}
       {palette.length > 0 && (
-        <div>
-          <div className="flex rounded-2xl overflow-hidden border border-line shadow-card h-28">
-            {palette.map((c, i) => (
-              <div key={i} className="relative flex-1 group flex flex-col justify-end" style={{ background: c.hex }}>
-                <button onClick={() => remove(i)} className="absolute top-1.5 right-1.5 w-6 h-6 rounded-md bg-black/25 text-white flex items-center justify-center opacity-70 hover:opacity-100" title="Șterge"><Icon.close className="w-3.5 h-3.5" /></button>
-                <div className="p-2 text-center" style={{ background: "rgba(255,255,255,0.9)" }}>
-                  {c.name && <p className="text-[13px] font-bold text-ink truncate leading-tight">{c.name}</p>}
-                  <p className="text-[11px] font-mono text-muted uppercase">{c.hex}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Acțiuni */}
-      <div className="flex flex-wrap gap-2">
-        <button className="btn-brand" onClick={generate}><Icon.spark /> Generează paletă</button>
-        <button className="btn" onClick={() => onChange([])} disabled={!palette.length}><Icon.trash /> Golește</button>
-        <button className={cx("btn", showPicker && "!border-brand/50 !text-brand-soft")} onClick={() => setShowPicker((v) => !v)}><Icon.plus /> Culoare custom</button>
-      </div>
-
-      {showPicker && (
-        <div className="card-2 p-3 flex flex-wrap items-end gap-2">
-          <input type="color" value={normalize(hex) || "#cccccc"} onChange={(e) => setHex(e.target.value)} className="w-11 h-11 rounded-lg border border-line2 cursor-pointer bg-transparent p-0.5" />
-          <input className="input !w-32 font-mono" value={hex} onChange={(e) => setHex(e.target.value)} placeholder="#RRGGBB" />
-          <span className="text-sm text-muted">≈ {(() => { const h = normalize(hex); return h ? nearestName(h) : "—"; })()}</span>
-          <button className="btn-brand" onClick={() => { const h = normalize(hex); if (h) addColor(h); }}><Icon.plus /> Adaugă</button>
-        </div>
-      )}
-
-      {/* Palete recomandate */}
-      <div>
-        <p className="text-sm font-semibold text-muted mb-2">Palete recomandate</p>
-        <div className="grid sm:grid-cols-2 gap-2.5">
-          {CURATED_PALETTES.map((p) => (
-            <button key={p.name} onClick={() => applyPalette(p.colors)} className="flex items-center gap-3 p-2 rounded-xl border border-line hover:border-brand/40 hover:bg-panel2 transition-colors text-left">
-              <div className="flex rounded-lg overflow-hidden h-9 w-24 shrink-0 border border-line">
-                {p.colors.map((h, i) => <span key={i} className="flex-1" style={{ background: h }} />)}
-              </div>
-              <span className="text-sm font-medium text-ink">{p.name}</span>
-            </button>
+        <div className="flex rounded-xl overflow-hidden border border-line h-16">
+          {palette.map((c, i) => (
+            <div key={i} className="relative flex-1 group flex flex-col justify-end" style={{ background: c.hex }} title={`${c.name || ""} ${c.hex}`}>
+              <button onClick={() => remove(i)} className="absolute top-1 right-1 w-5 h-5 rounded bg-black/25 text-white flex items-center justify-center opacity-70 hover:opacity-100"><Icon.close className="w-3 h-3" /></button>
+              <p className="text-[11px] font-mono text-center uppercase py-0.5" style={{ background: "rgba(255,255,255,0.85)", color: "#333" }}>{c.hex}</p>
+            </div>
           ))}
         </div>
+      )}
+
+      {/* Adaugă culoare — mereu vizibil, poți adăuga oricâte */}
+      <div className="flex flex-wrap items-center gap-2">
+        <input type="color" value={normalize(hex) || "#cccccc"} onChange={(e) => setHex(e.target.value)} className="w-10 h-10 rounded-lg border border-line2 cursor-pointer bg-transparent p-0.5 shrink-0" />
+        <input className="input !w-28 font-mono" value={hex} onChange={(e) => setHex(e.target.value)} placeholder="#RRGGBB" onKeyDown={(e) => { if (e.key === "Enter") { const h = normalize(hex); if (h) addColor(h); } }} />
+        <span className="text-sm text-muted w-20 shrink-0">≈ {(() => { const h = normalize(hex); return h ? nearestName(h) : "—"; })()}</span>
+        <button className="btn-brand" onClick={() => { const h = normalize(hex); if (h) addColor(h); }}><Icon.plus /> Adaugă</button>
+        <button className="btn" onClick={generate} title="Paletă aleatoare recomandată"><Icon.spark /> Generează</button>
+        {palette.length > 0 && <button className="btn-ghost" onClick={() => onChange([])}>Golește</button>}
       </div>
 
-      {/* Selector rapid pe nume */}
+      {/* Palete recomandate — pliabil */}
       <div>
-        <p className="text-sm font-semibold text-muted mb-2">Selector rapid <span className="text-faint font-normal">· apasă ca să adaugi</span></p>
-        <div className="flex flex-wrap gap-2">
-          {COLOR_LIBRARY.map((c) => {
-            const on = has(c.hex);
-            return (
-              <button key={c.hex} onClick={() => on ? onChange(palette.filter((x) => x.hex.toLowerCase() !== c.hex.toLowerCase())) : addColor(c.hex, c.name)}
-                className={cx("flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border text-sm font-medium transition-colors", on ? "border-brand bg-brand/10 text-ink" : "border-line text-muted hover:text-ink hover:border-line2")} title={c.hex}>
-                <span className="w-5 h-5 rounded-full border border-black/10 shrink-0" style={{ background: c.hex }} />
-                {c.name}
+        <button className="flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink" onClick={() => setOpenRec((v) => !v)}>
+          <Icon.chevron className={cx("w-4 h-4 transition-transform", openRec && "rotate-90")} /> Palete recomandate
+        </button>
+        {openRec && (
+          <div className="grid sm:grid-cols-2 gap-2 mt-2">
+            {CURATED_PALETTES.map((p) => (
+              <button key={p.name} onClick={() => applyPalette(p.colors)} className="flex items-center gap-3 p-1.5 rounded-lg border border-line hover:border-brand/40 hover:bg-panel2 transition-colors text-left">
+                <div className="flex rounded-md overflow-hidden h-7 w-20 shrink-0 border border-line">{p.colors.map((h, i) => <span key={i} className="flex-1" style={{ background: h }} />)}</div>
+                <span className="text-sm font-medium text-ink">{p.name}</span>
               </button>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Selector rapid pe nume — pliabil */}
+      <div>
+        <button className="flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink" onClick={() => setOpenLib((v) => !v)}>
+          <Icon.chevron className={cx("w-4 h-4 transition-transform", openLib && "rotate-90")} /> Culori cu nume ({COLOR_LIBRARY.length})
+        </button>
+        {openLib && (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {COLOR_LIBRARY.map((c) => {
+              const on = has(c.hex);
+              return (
+                <button key={c.hex} onClick={() => on ? onChange(palette.filter((x) => x.hex.toLowerCase() !== c.hex.toLowerCase())) : addColor(c.hex, c.name)}
+                  className={cx("flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-full border text-[13px] font-medium transition-colors", on ? "border-brand bg-brand/10 text-ink" : "border-line text-muted hover:text-ink")} title={c.hex}>
+                  <span className="w-4 h-4 rounded-full border border-black/10 shrink-0" style={{ background: c.hex }} />{c.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

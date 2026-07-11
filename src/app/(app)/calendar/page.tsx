@@ -56,14 +56,14 @@ export default function CalendarPage() {
         </div>
       </PageHeader>
 
-      <div className="grid lg:grid-cols-[1fr_320px] gap-6">
-        <div className="card p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-4">
+      <div className="grid lg:grid-cols-[1fr_300px] gap-4">
+        <div className="card p-3 sm:p-4">
+          <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-bold">{MONTHS[month]} {year}</h2>
-            <span className="text-sm text-muted">{monthEvents.length} evenimente · {money(monthRevenue, "RON")}</span>
+            <span className="text-sm text-muted">{monthEvents.length} ev. · {money(monthRevenue, "RON")}</span>
           </div>
-          <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
-            {DOW.map((d) => <div key={d} className="text-center text-[13px] font-semibold text-faint uppercase py-1">{d}</div>)}
+          <div className="grid grid-cols-7 gap-1">
+            {DOW.map((d) => <div key={d} className="text-center text-[12px] font-semibold text-faint uppercase pb-1">{d}</div>)}
             {grid.map((iso, i) => {
               if (!iso) return <div key={i} />;
               const day = Number(iso.slice(-2));
@@ -72,15 +72,23 @@ export default function CalendarPage() {
               const isSel = iso === selected;
               return (
                 <button key={iso} onClick={() => setSelected(iso === selected ? null : iso)}
-                  className={cx("aspect-square sm:aspect-[4/5] rounded-lg border p-1.5 flex flex-col items-start text-left transition-colors relative overflow-hidden",
+                  className={cx("h-12 sm:h-[58px] xl:h-[72px] rounded-lg border p-1 flex flex-col items-stretch text-left transition-colors relative overflow-hidden",
                     isSel ? "border-brand bg-brand/10" : events.length ? "border-line2 bg-panel2 hover:border-brand/40" : "border-line/60 hover:bg-panel2/60")}>
-                  <span className={cx("text-xs font-medium tabular-nums", isToday ? "w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center" : "text-muted")}>{day}</span>
-                  <div className="mt-1 space-y-0.5 w-full">
-                    {events.slice(0, 2).map((e) => (
-                      <div key={e.id} className="text-[12px] leading-tight truncate px-1 py-0.5 rounded bg-brand/15 text-brand-soft font-medium">{e.couple}</div>
-                    ))}
-                    {events.length > 2 && <div className="text-[12px] text-faint px-1">+{events.length - 2}</div>}
-                  </div>
+                  <span className={cx("text-[12px] font-semibold tabular-nums self-start", isToday ? "w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center" : "text-muted")}>{day}</span>
+                  {/* mobile: dots · desktop: chips */}
+                  {events.length > 0 && (
+                    <>
+                      <div className="hidden sm:block mt-0.5 space-y-0.5 w-full overflow-hidden">
+                        {events.slice(0, 2).map((e) => (
+                          <div key={e.id} className="text-[11px] leading-tight truncate px-1 py-0.5 rounded bg-brand/15 text-brand-soft font-semibold">{e.couple}</div>
+                        ))}
+                        {events.length > 2 && <div className="text-[11px] text-faint px-1">+{events.length - 2}</div>}
+                      </div>
+                      <div className="sm:hidden flex gap-0.5 mt-auto">
+                        {events.slice(0, 3).map((e) => <span key={e.id} className="w-1.5 h-1.5 rounded-full bg-brand-soft" />)}
+                      </div>
+                    </>
+                  )}
                 </button>
               );
             })}
