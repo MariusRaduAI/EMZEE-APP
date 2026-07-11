@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
 import { Icon } from "./ui";
+import { exportPackingPDF } from "@/lib/pdf";
 import { cx } from "@/lib/utils";
 
 export function RentalsAllocator({ clientId }: { clientId: string }) {
@@ -27,14 +28,28 @@ export function RentalsAllocator({ clientId }: { clientId: string }) {
     return m;
   }, [db.allocations, db.clients, client, clientId]);
 
+  const [extras, setExtras] = useState("");
+
   const setQty = (id: string, qty: number) => { setAlloc((p) => ({ ...p, [id]: Math.max(0, qty) })); setDirty(true); };
   const save = () => { setAllocations(clientId, Object.entries(alloc).map(([inventory_id, qty]) => ({ inventory_id, qty }))); setDirty(false); };
 
+  const packing = () => {
+    const rows = db.inventory
+      .filter((it) => (alloc[it.id] || 0) > 0)
+      .map((it) => ({ name: it.name, qty: alloc[it.id], category: it.category || "altele" }));
+    const extraList = extras.split("\n").map((s) => s.trim()).filter(Boolean);
+    exportPackingPDF(client, rows, extraList);
+  };
+  const totalItems = Object.values(alloc).reduce((s, q) => s + (q || 0), 0);
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <p className="text-sm text-muted">Rezervă echipamente pentru acest eveniment{client?.event_date ? "" : " (setează o dată pentru verificare disponibilitate)"}.</p>
-        <button className={cx("btn-brand", !dirty && "opacity-60")} onClick={save}><Icon.check /> {dirty ? "Salvează" : "Salvat"}</button>
+        <div className="flex items-center gap-2">
+          <button className="btn" onClick={packing} disabled={totalItems === 0} title={totalItems === 0 ? "Alocă articole mai întâi" : "Listă de ambalare printabilă"}><Icon.print /> Listă ambalare</button>
+          <button className={cx("btn-brand", !dirty && "opacity-60")} onClick={save}><Icon.check /> {dirty ? "Salvează" : "Salvat"}</button>
+        </div>
       </div>
       <div className="space-y-2">
         {db.inventory.map((it) => {
@@ -58,6 +73,12 @@ export function RentalsAllocator({ clientId }: { clientId: string }) {
           );
         })}
         {db.inventory.length === 0 && <p className="text-sm text-muted text-center py-6">Niciun articol în inventar. Adaugă din pagina Inventar & Rentals.</p>}
+      </div>
+
+      <div className="card-2 p-4 mt-4">
+        <label className="label">Articole suplimentare pentru listă (câte unul pe rând)</label>
+        <textarea className="input min-h-[70px] resize-y" value={extras} onChange={(e) => setExtras(e.target.value)} placeholder={"Prelungitoare\nBandă adezivă\nTrusă de rezervă"} />
+        <p className="text-xs text-faint mt-1.5">Apar în lista de ambalare, separat de inventar. Bifezi pe hârtie „Luat" și „Retur" pentru fiecare.</p>
       </div>
     </div>
   );

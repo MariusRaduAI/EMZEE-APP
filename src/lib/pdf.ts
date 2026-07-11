@@ -726,6 +726,88 @@ export function exportContractPDF(c: ContractLike) {
   doc.save(`contract-${(c.benef_name || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
 }
 
+interface PackRow { name: string; qty: number; category: string; }
+const CAT_LABEL: Record<string, string> = { jocuri: "Jocuri & Rentals", flori: "Flori & Decor", altele: "Altele" };
+export function exportPackingPDF(client: { couple: string; event_date: string; venue: string; city?: string } | undefined, rows: PackRow[], extras: string[]) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  registerFont(doc);
+  const ctx: PdfCtx = { doc, y: 0 };
+
+  doc.setFillColor(...C.teal);
+  doc.rect(0, 0, PAGE_W, 40, "F");
+  doc.setFont(FONT, "bold"); doc.setFontSize(8); doc.setTextColor(200, 240, 236);
+  doc.text("L I S T Ă   D E   A M B A L A R E   &   R E T U R", M, 14);
+  doc.setFontSize(20); doc.setTextColor(...C.white);
+  doc.text(client?.couple || "Eveniment", M, 26);
+  doc.setFont(FONT, "normal"); doc.setFontSize(9.5); doc.setTextColor(210, 240, 237);
+  const sub = [client?.event_date ? fmtDate(client.event_date) : "", client?.venue || client?.city || ""].filter(Boolean).join("   ·   ");
+  doc.text(sub, M, 34);
+  doc.setFont(FONT, "bold"); doc.setFontSize(14); doc.setTextColor(...C.white);
+  doc.text("EMZEE", PAGE_W - M, 20, { align: "right" });
+
+  ctx.y = 52;
+
+  // coloane
+  const colBox1 = PAGE_W - M - 46; // „Luat”
+  const colBox2 = PAGE_W - M - 20; // „Retur”
+  const colQty = colBox1 - 20;
+
+  const header = () => {
+    doc.setFillColor(238, 245, 244);
+    doc.roundedRect(M, ctx.y - 5, CW, 8, 1.5, 1.5, "F");
+    doc.setFont(FONT, "bold"); doc.setFontSize(8.5); doc.setTextColor(...C.muted);
+    doc.text("ARTICOL", M + 2, ctx.y);
+    doc.text("CANT.", colQty, ctx.y);
+    doc.text("LUAT", colBox1, ctx.y);
+    doc.text("RETUR", colBox2, ctx.y);
+    ctx.y += 9;
+  };
+  const box = (x: number) => { doc.setDrawColor(...C.slate); doc.setLineWidth(0.35); doc.roundedRect(x, ctx.y - 4, 4.2, 4.2, 0.6, 0.6, "S"); };
+
+  const groups: Record<string, PackRow[]> = {};
+  rows.forEach((r) => { (groups[r.category] ||= []).push(r); });
+  const order = ["jocuri", "flori", "altele"];
+
+  if (rows.length === 0) {
+    doc.setFont(FONT, "normal"); doc.setFontSize(10); doc.setTextColor(...C.faint);
+    doc.text("Niciun articol alocat. Alocă echipamente din tabul Rentals.", M, ctx.y + 2);
+  } else {
+    header();
+    order.filter((k) => groups[k]?.length).forEach((k) => {
+      ensure(ctx, 10);
+      doc.setFont(FONT, "bold"); doc.setFontSize(8); doc.setTextColor(...C.teal);
+      doc.text((CAT_LABEL[k] || k).toUpperCase(), M + 2, ctx.y);
+      ctx.y += 6;
+      groups[k].forEach((r) => {
+        ensure(ctx, 9);
+        doc.setFont(FONT, "normal"); doc.setFontSize(10); doc.setTextColor(...C.ink);
+        const nm = doc.splitTextToSize(r.name, colQty - M - 6)[0] as string;
+        doc.text(nm, M + 2, ctx.y);
+        doc.setFont(FONT, "bold"); doc.text(String(r.qty), colQty, ctx.y);
+        box(colBox1); box(colBox2);
+        ctx.y += 3;
+        doc.setDrawColor(...C.track); doc.setLineWidth(0.2); doc.line(M, ctx.y, PAGE_W - M, ctx.y);
+        ctx.y += 5;
+      });
+      ctx.y += 2;
+    });
+  }
+
+  if (extras.length) {
+    sectionTitle(ctx, "Articole suplimentare", C.amber);
+    extras.forEach((e) => {
+      ensure(ctx, 9);
+      box(M + 1.5);
+      doc.setFont(FONT, "normal"); doc.setFontSize(10); doc.setTextColor(...C.ink);
+      doc.text(e, M + 9, ctx.y);
+      ctx.y += 8;
+    });
+  }
+
+  footer(doc);
+  doc.save(`ambalare-${(client?.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
+}
+
 interface CorpLike { company: string; contact: string; email: string; phone: string; date: string; participants: number | null; format: string[]; objectives: string[]; activities: string[]; location: string; catering: string; budget: number | null; deadline: string; notes: string; }
 export function exportCorporatePDF(c: CorpLike) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });

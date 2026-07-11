@@ -21,6 +21,7 @@ const NAV: { href: string; label: string; icon: (p: { className?: string }) => R
   { href: "/flori", label: "Brief Flori", icon: Icon.flower },
   { href: "/offers", label: "Generator oferte", icon: Icon.offer },
   { href: "/inventory", label: "Inventar & Rentals", icon: Icon.box },
+  { href: "/followup", label: "Follow-up & Recenzii", icon: Icon.send },
   { href: "/corporate", label: "Corporate", icon: Icon.building },
 ];
 
