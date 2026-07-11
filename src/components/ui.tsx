@@ -35,6 +35,7 @@ export const Icon = {
   mic: (p: IconProps) => <S {...p}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" /></S>,
   filter: (p: IconProps) => <S {...p}><path d="M3 5h18l-7 8v6l-4-2v-4Z" /></S>,
   copy: (p: IconProps) => <S {...p}><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M4 16V5a1 1 0 0 1 1-1h11" /></S>,
+  chart: (p: IconProps) => <S {...p}><path d="M4 20V4M4 20h16M8 20v-6M12 20V9M16 20v-9M20 20V6" /></S>,
 };
 
 /* ---------------- Modal ---------------- */

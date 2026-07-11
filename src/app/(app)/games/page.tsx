@@ -82,11 +82,11 @@ export default function GamesPage() {
                   </td>
                   <td className="td font-medium text-ink">
                     <span className="group-hover:text-brand-soft transition-colors">{g.name}</span>
-                    {g.instructions && <Icon.chevron className="inline w-3.5 h-3.5 ml-1 text-faint opacity-0 group-hover:opacity-100" />}
+                    {g.instructions && <Icon.chevron className="inline w-3.5 h-3.5 ml-1 text-faint" />}
                   </td>
                   <td className="td"><span className="badge bg-panel2 border border-line text-muted">{g.category || "—"}</span></td>
                   <td className="td text-right">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-1">
                       <button className="btn-ghost !p-1.5" onClick={(e) => { e.stopPropagation(); setEditing(g); }}><Icon.edit /></button>
                       <button className="btn-ghost !p-1.5 hover:!text-rose" onClick={async (e) => { e.stopPropagation(); if (await confirm(`Ștergi jocul „${g.name}”?`)) deleteGame(g.id); }}><Icon.trash /></button>
                     </div>

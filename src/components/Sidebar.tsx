@@ -11,6 +11,7 @@ const NAV = [
   { href: "/dashboard", label: "Panou principal", icon: Icon.dashboard },
   { href: "/calendar", label: "Calendar", icon: Icon.calendar },
   { href: "/clients", label: "Clienți", icon: Icon.users },
+  { href: "/reports", label: "Rapoarte", icon: Icon.chart },
   { href: "/games", label: "Banca de jocuri", icon: Icon.games },
   { href: "/program", label: "Generator program", icon: Icon.clock },
   { href: "/checklist", label: "Checklist planner", icon: Icon.check },

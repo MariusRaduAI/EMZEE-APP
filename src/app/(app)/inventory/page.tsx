@@ -41,7 +41,7 @@ export default function InventoryPage() {
             <div key={it.id} className="card p-5 group">
               <div className="flex items-start justify-between mb-3">
                 <span className="w-10 h-10 rounded-xl bg-brand/12 border border-brand/25 flex items-center justify-center text-brand-soft"><Icon.box /></span>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1">
                   <button className="btn-ghost !p-1.5" onClick={() => setEditing(it)}><Icon.edit /></button>
                   <button className="btn-ghost !p-1.5 hover:!text-rose" onClick={async () => { if (await confirm(`Ștergi „${it.name}”?`)) deleteInventory(it.id); }}><Icon.trash /></button>
                 </div>

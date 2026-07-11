@@ -4,15 +4,18 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
 import { PageHeader } from "@/components/common";
-import { Icon, Modal, StatusBadge } from "@/components/ui";
+import { Icon, Modal, StatusBadge, useConfirm } from "@/components/ui";
 import { ClientForm } from "@/components/ClientForm";
+import { Client } from "@/lib/types";
 import { fmtDateShort, money, initials, daysUntil, cx, downloadCSV } from "@/lib/utils";
 
 export default function ClientsPage() {
-  const { db, saveClient } = useStore();
+  const { db, saveClient, deleteClient } = useStore();
+  const { confirm, node } = useConfirm();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<Client | null>(null);
 
   const rows = useMemo(() => {
     const ql = q.toLowerCase();
@@ -68,6 +71,7 @@ export default function ClientsPage() {
                 <th className="th">Servicii</th>
                 <th className="th text-right">Fee</th>
                 <th className="th">Status</th>
+                <th className="th text-right">Acțiuni</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line/50">
@@ -101,6 +105,12 @@ export default function ClientsPage() {
                     </td>
                     <td className="td text-right font-medium tabular-nums">{money(c.fee, c.currency)}</td>
                     <td className="td"><StatusBadge status={c.status} /></td>
+                    <td className="td">
+                      <div className="flex items-center justify-end gap-1">
+                        <button className="btn-ghost !p-1.5" title="Editează" onClick={() => setEditing(c)}><Icon.edit /></button>
+                        <button className="btn-ghost !p-1.5 hover:!text-rose" title="Șterge" onClick={async () => { if (await confirm(`Ștergi clientul „${c.couple}”?`)) deleteClient(c.id); }}><Icon.trash /></button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -118,6 +128,12 @@ export default function ClientsPage() {
       <Modal open={adding} onClose={() => setAdding(false)} title="Client nou" wide>
         <ClientForm onSave={(c) => { saveClient(c); setAdding(false); }} onCancel={() => setAdding(false)} />
       </Modal>
+
+      <Modal open={!!editing} onClose={() => setEditing(null)} title={`Editează · ${editing?.couple || ""}`} wide>
+        {editing && <ClientForm key={editing.id} initial={editing} onSave={(c) => { saveClient(c); setEditing(null); }} onCancel={() => setEditing(null)} />}
+      </Modal>
+
+      {node}
     </div>
   );
 }
