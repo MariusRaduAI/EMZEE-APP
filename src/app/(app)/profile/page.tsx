@@ -15,7 +15,7 @@ export default function ProfilePage() {
 
   return (
     <div className="fade-in">
-      <PageHeader title="Profil miri & invitați" subtitle="Cunoaște cuplul și publicul: stil, demografie, structură, seating." icon={<Icon.heart />}>
+      <PageHeader title="Profil miri & invitați" subtitle="Cunoaște cuplul și publicul: stil, demografie, structură, seating." icon={<Icon.rings />}>
         <ClientSelect value={clientId} onChange={setPicked} />
       </PageHeader>
       {clientId && db.clients.some((c) => c.id === clientId)

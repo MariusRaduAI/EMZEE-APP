@@ -83,7 +83,7 @@ export default function Dashboard() {
         <BigAction href="/program" icon={<Icon.clock />} title="Program" hint="Timeline + PDF" color="bg-teal" />
         <BigAction href="/offers" icon={<Icon.offer />} title="Ofertă" hint="Total automat" color="bg-green" />
         <BigAction href="/checklist" icon={<Icon.check />} title="Checklist" hint="Planificare" color="bg-amber" />
-        <BigAction href="/profile" icon={<Icon.heart />} title="Profil miri" hint="Demografie" color="bg-rose" />
+        <BigAction href="/profile" icon={<Icon.rings />} title="Profil miri" hint="Demografie" color="bg-rose" />
         <BigAction href="/games" icon={<Icon.games />} title="Jocuri" hint={`${stats.games} jocuri`} color="bg-brand-soft" />
       </div>
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Icon } from "./ui";
+import { Logo } from "./Logo";
 import { useStore } from "@/lib/store";
 import { cx } from "@/lib/utils";
 
@@ -16,8 +17,8 @@ const NAV: { href: string; label: string; icon: (p: { className?: string }) => R
   { href: "/games", label: "Banca de jocuri", icon: Icon.games },
   { href: "/program", label: "Generator program", icon: Icon.clock },
   { href: "/checklist", label: "Checklist planner", icon: Icon.check },
-  { href: "/profile", label: "Profil miri & invitați", icon: Icon.heart },
-  { href: "/flori", label: "Flori — brief", icon: Icon.flower },
+  { href: "/profile", label: "Profil miri & invitați", icon: Icon.rings },
+  { href: "/flori", label: "Brief Flori", icon: Icon.flower },
   { href: "/offers", label: "Generator oferte", icon: Icon.offer },
   { href: "/inventory", label: "Inventar & Rentals", icon: Icon.box },
   { href: "/corporate", label: "Corporate", icon: Icon.building },
@@ -81,9 +82,8 @@ export function Sidebar() {
 
 function Brand() {
   return (
-    <Link href="/dashboard" className="flex items-center gap-2.5">
-      <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-teal flex items-center justify-center text-white font-black text-sm shadow-glow">E</span>
-      <span className="font-bold tracking-tight text-ink text-[17px]">EMZEE<span className="text-faint font-medium ml-1 text-xs align-top">OS</span></span>
+    <Link href="/dashboard" className="flex items-center">
+      <Logo className="h-9 w-auto text-ink" />
     </Link>
   );
 }

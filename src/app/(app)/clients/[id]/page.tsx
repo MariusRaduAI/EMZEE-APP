@@ -20,7 +20,7 @@ const TABS = [
   { k: "overview", label: "Prezentare", icon: Icon.users },
   { k: "program", label: "Program", icon: Icon.clock },
   { k: "checklist", label: "Checklist", icon: Icon.check },
-  { k: "profile", label: "Profil miri", icon: Icon.heart },
+  { k: "profile", label: "Profil miri", icon: Icon.rings },
   { k: "floral", label: "Flori", icon: Icon.flower },
   { k: "offer", label: "Ofertă", icon: Icon.offer },
   { k: "rentals", label: "Rentals", icon: Icon.box },

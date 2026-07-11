@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useStore } from "@/lib/store";
+import { Logo } from "./Logo";
 
 export function LoginScreen() {
   const { signIn } = useStore();
@@ -22,9 +23,8 @@ export function LoginScreen() {
     <div className="min-h-dvh flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8">
-          <span className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand to-teal flex items-center justify-center text-white font-black text-lg shadow-glow mb-3">E</span>
-          <h1 className="text-2xl font-bold tracking-tight">EMZEE <span className="text-faint font-medium text-sm">OS</span></h1>
-          <p className="text-muted text-sm mt-1">Platforma ta de management evenimente</p>
+          <Logo className="h-14 w-auto text-ink mb-4 logo-in" />
+          <p className="text-muted text-sm">Platforma ta de management evenimente</p>
         </div>
 
         <form onSubmit={submit} className="card p-6 space-y-4">

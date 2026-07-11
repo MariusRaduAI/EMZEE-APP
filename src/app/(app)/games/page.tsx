@@ -130,6 +130,8 @@ export default function GamesPage() {
 
 function GameEditor({ game, onClose, onSave, categories }: { game: Game; onClose: () => void; onSave: (g: Game) => void; categories: string[] }) {
   const [g, setG] = useState<Game>(game);
+  const known = g.category && !categories.includes(g.category) ? [g.category, ...categories] : categories;
+  const [creating, setCreating] = useState(false);
   return (
     <Modal open onClose={onClose} title={g.id ? "Editează joc" : "Joc nou"} wide>
       <div className="space-y-4">
@@ -139,8 +141,18 @@ function GameEditor({ game, onClose, onSave, categories }: { game: Game; onClose
         </div>
         <div>
           <label className="label">Categorie</label>
-          <input className="input" list="game-cats" value={g.category} onChange={(e) => setG({ ...g, category: e.target.value })} placeholder="ex. Ice-breaker" />
-          <datalist id="game-cats">{categories.map((c) => <option key={c} value={c} />)}</datalist>
+          {creating ? (
+            <div className="flex gap-2">
+              <input className="input" value={g.category} onChange={(e) => setG({ ...g, category: e.target.value })} placeholder="Nume categorie nouă" autoFocus />
+              <button className="btn shrink-0" onClick={() => setCreating(false)}>Alege existentă</button>
+            </div>
+          ) : (
+            <select className="input" value={g.category} onChange={(e) => { if (e.target.value === "__new__") { setCreating(true); setG({ ...g, category: "" }); } else setG({ ...g, category: e.target.value }); }}>
+              <option value="">— Fără categorie —</option>
+              {known.map((c) => <option key={c} value={c}>{c}</option>)}
+              <option value="__new__">➕ Categorie nouă…</option>
+            </select>
+          )}
         </div>
         <div>
           <label className="label">Instrucțiuni</label>

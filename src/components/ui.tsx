@@ -31,7 +31,8 @@ export const Icon = {
   grip: (p: IconProps) => <S {...p}><circle cx="9" cy="6" r="1" /><circle cx="15" cy="6" r="1" /><circle cx="9" cy="12" r="1" /><circle cx="15" cy="12" r="1" /><circle cx="9" cy="18" r="1" /><circle cx="15" cy="18" r="1" /></S>,
   logout: (p: IconProps) => <S {...p}><path d="M15 4h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3M10 12H3m0 0 3.5-3.5M3 12l3.5 3.5" /></S>,
   spark: (p: IconProps) => <S {...p}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18" /></S>,
-  flower: (p: IconProps) => <S {...p}><circle cx="12" cy="12" r="2.5" /><path d="M12 9.5c0-3 3.5-3 3.5 0M12 14.5c0 3-3.5 3-3.5 0M9.5 12c-3 0-3-3.5 0-3.5M14.5 12c3 0 3 3.5 0 3.5" /></S>,
+  flower: (p: IconProps) => <S {...p}><circle cx="12" cy="12" r="3" /><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5" /><path d="M12 7.5V9M16.5 12H15M12 16.5V15M7.5 12H9" /></S>,
+  rings: (p: IconProps) => <S {...p}><circle cx="8.5" cy="14" r="5" /><circle cx="15.5" cy="14" r="5" /><path d="M8.5 4l1.5 3h-3zM15.5 4l1.5 3h-3z" /></S>,
   mic: (p: IconProps) => <S {...p}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" /></S>,
   filter: (p: IconProps) => <S {...p}><path d="M3 5h18l-7 8v6l-4-2v-4Z" /></S>,
   copy: (p: IconProps) => <S {...p}><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M4 16V5a1 1 0 0 1 1-1h11" /></S>,
@@ -50,14 +51,14 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-8 overflow-y-auto no-print" onMouseDown={onClose}>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-      <div className={cx("relative card w-full my-4 fade-in", wide ? "max-w-3xl" : "max-w-lg")} onMouseDown={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-line">
-          <h3 className="font-semibold text-ink">{title}</h3>
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 overflow-y-auto no-print" onMouseDown={onClose}>
+      <div className="fixed inset-0 bg-black/45" />
+      <div className={cx("relative card w-full my-2 sm:my-6 fade-in", wide ? "max-w-6xl" : "max-w-3xl")} onMouseDown={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-line">
+          <h3 className="font-bold text-ink text-lg">{title}</h3>
           <button className="btn-ghost !p-1.5" onClick={onClose}><Icon.close /></button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="p-6">{children}</div>
       </div>
     </div>
   );
