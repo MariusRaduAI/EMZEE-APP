@@ -7,10 +7,10 @@ import { Icon } from "./ui";
 import { useStore } from "@/lib/store";
 import { cx } from "@/lib/utils";
 
-const NAV = [
+const NAV: { href: string; label: string; icon: (p: { className?: string }) => React.ReactNode; badge?: string }[] = [
   { href: "/dashboard", label: "Panou principal", icon: Icon.dashboard },
   { href: "/calendar", label: "Calendar", icon: Icon.calendar },
-  { href: "/agenda", label: "Agenda (întâlniri & to-do)", icon: Icon.agenda },
+  { href: "/todo", label: "To Do", icon: Icon.agenda },
   { href: "/clients", label: "Clienți", icon: Icon.users },
   { href: "/reports", label: "Rapoarte", icon: Icon.chart },
   { href: "/games", label: "Banca de jocuri", icon: Icon.games },
