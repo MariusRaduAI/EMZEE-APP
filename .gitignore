@@ -1,0 +1,34 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files (SECRETS — never commit)
+.env
+.env.local
+.env*.local
+
+# personal / private data — never commit real client data
+supabase/seed_clients.local.sql
+*.local.sql
+emzee-clients-backup.json
+
+# typescript
+*.tsbuildinfo

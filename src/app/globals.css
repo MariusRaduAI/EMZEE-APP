@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+}
+
+* { -webkit-font-smoothing: antialiased; }
+
+html, body {
+  background: #0a0c11;
+  color: #e8ebf3;
+  font-family: var(--font-sans);
+}
+
+body {
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(109,107,255,0.10), transparent 60%),
+    radial-gradient(900px 500px at 5% 0%, rgba(51,214,196,0.06), transparent 55%);
+  background-attachment: fixed;
+}
+
+::selection { background: rgba(109,107,255,0.35); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #2a3145; border-radius: 8px; border: 2px solid #0a0c11; }
+::-webkit-scrollbar-thumb:hover { background: #38415c; }
+
+@layer components {
+  .card {
+    @apply bg-panel border border-line rounded-2xl shadow-card;
+  }
+  .card-2 {
+    @apply bg-panel2 border border-line rounded-xl;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium
+      border border-line bg-panel2 text-ink transition-colors hover:border-line2 hover:bg-[#1b2233]
+      disabled:opacity-40 disabled:pointer-events-none select-none;
+  }
+  .btn-brand {
+    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold
+      bg-brand text-white transition-all hover:bg-brand-soft shadow-[0_6px_20px_rgba(109,107,255,0.35)]
+      disabled:opacity-40 disabled:pointer-events-none select-none;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+      text-muted hover:text-ink hover:bg-panel2 transition-colors select-none;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+      border border-line text-rose hover:bg-rose/10 hover:border-rose/40 transition-colors select-none;
+  }
+  .input {
+    @apply w-full bg-panel2 border border-line rounded-lg px-3 py-2 text-sm text-ink
+      placeholder:text-faint outline-none focus:border-brand focus:ring-2 focus:ring-brand/25 transition;
+  }
+  .label {
+    @apply block text-xs font-medium text-muted mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors select-none cursor-pointer;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold;
+  }
+  .th {
+    @apply text-left text-[11px] uppercase tracking-wider font-semibold text-faint px-4 py-3;
+  }
+  .td {
+    @apply px-4 py-3 text-sm text-ink/90 align-middle;
+  }
+  .navlink {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted
+      hover:text-ink hover:bg-panel2 transition-colors;
+  }
+  .navlink-active {
+    background: rgba(109, 107, 255, 0.12);
+    border: 1px solid rgba(109, 107, 255, 0.25);
+    color: #e8ebf3;
+  }
+  .stat {
+    @apply card p-4 flex flex-col gap-1;
+  }
+  .section-title {
+    @apply text-[13px] font-semibold uppercase tracking-wider text-faint;
+  }
+}
+
+.fade-in { animation: fade 0.35s ease both; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.dragging { opacity: 0.4; }
+.drop-target { outline: 2px dashed rgba(109,107,255,0.6); outline-offset: -4px; }
+
+/* ---------- PRINT (PDF via browser) ---------- */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: #fff !important; color: #111 !important; }
+  .no-print { display: none !important; }
+  .print-area { display: block !important; }
+  .print-only { display: block !important; }
+}
+.print-only { display: none; }
