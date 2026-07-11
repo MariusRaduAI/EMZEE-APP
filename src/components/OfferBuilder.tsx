@@ -5,13 +5,16 @@ import { useStore } from "@/lib/store";
 import { Icon, useConfirm } from "./ui";
 import { Offer, OfferItem } from "@/lib/types";
 import { uid, money, fmtDate, cx, downloadCSV } from "@/lib/utils";
+import { exportOfferPDF } from "@/lib/pdf";
 
 const CATS = ["MC", "Program", "Jocuri", "Flori", "Rentals", "Kids", "Corporate", "Altele"];
 
 const PACKAGES: { name: string; items: Omit<OfferItem, "id">[] }[] = [
-  { name: "Experience Compact", items: [
-    { category: "MC", description: "Moderare profesionistă & flow management", qty: 1, unit_price: 800 },
-    { category: "Jocuri", description: "2-3 momente interactive personalizate", qty: 1, unit_price: 0 },
+  { name: "MC Experience", items: [
+    { category: "MC", description: "Moderare profesionistă & flow management", qty: 1, unit_price: 0 },
+    { category: "Jocuri", description: "Selecția jocurilor personalizate", qty: 1, unit_price: 0 },
+    { category: "Program", description: "Pregătirea programului (timeline complet)", qty: 1, unit_price: 0 },
+    { category: "MC", description: "Managementul oamenilor și al echipei participante", qty: 1, unit_price: 0 },
   ]},
   { name: "Experience Full", items: [
     { category: "MC", description: "Moderare profesionistă & coordonare completă", qty: 1, unit_price: 1500 },
@@ -19,8 +22,10 @@ const PACKAGES: { name: string; items: Omit<OfferItem, "id">[] }[] = [
     { category: "Jocuri", description: "4+ jocuri personalizate + sistem de premii", qty: 1, unit_price: 0 },
   ]},
   { name: "Flowers Experience", items: [
-    { category: "Flori", description: "Decor floral (flori naturale) — setup mese & prezidiu", qty: 1, unit_price: 1500 },
-    { category: "Flori", description: "Buchet mireasă + cocarde", qty: 1, unit_price: 0 },
+    { category: "Flori", description: "Prezidiu (aranjament floral)", qty: 1, unit_price: 0 },
+    { category: "Flori", description: "Arcadă florală", qty: 1, unit_price: 0 },
+    { category: "Flori", description: "Aranjamente mese invitați", qty: 1, unit_price: 0 },
+    { category: "Flori", description: "Buchet mireasă", qty: 1, unit_price: 0 },
   ]},
   { name: "Rentals — Pachet Basic", items: [
     { category: "Rentals", description: "Giant Jenga (1) + Tir cu arcul (2) + Cornhole (2)", qty: 1, unit_price: 500 },
@@ -63,7 +68,7 @@ export function OfferBuilder({ initial, onSaved }: { initial: Offer; onSaved?: (
           <button className="btn-danger mr-auto" onClick={async () => { if (await confirm("Ștergi această ofertă?")) { deleteOffer(o.id); onSaved?.(o); } }}><Icon.trash /> Șterge</button>
         )}
         <button className="btn" onClick={exportExcel}><Icon.download /> Excel</button>
-        <button className="btn" onClick={() => window.print()}><Icon.print /> PDF</button>
+        <button className="btn" onClick={() => exportOfferPDF({ couple: o.couple, event_date: o.event_date, venue: o.venue, guests: o.guests, currency: o.currency, discount: o.discount, notes: o.notes, terms: o.terms, items: o.items })}><Icon.download /> PDF</button>
         <button className={cx("btn-brand", !dirty && "opacity-60")} onClick={save}><Icon.check /> {dirty ? "Salvează" : "Salvat"}</button>
       </div>
 
