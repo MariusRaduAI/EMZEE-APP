@@ -15,7 +15,7 @@ export default function FloriPage() {
 
   return (
     <div className="fade-in">
-      <PageHeader title="Flori — brief aranjamente" subtitle="Tot ce discuți cu mirii despre flori: stil, culori, elemente, cantități. Baza pentru ofertă." icon={<Icon.flower />}>
+      <PageHeader title="Flori — concept" subtitle="Paletă, stil, flori și elemente pentru aranjamentele florale." icon={<Icon.flower />}>
         <ClientSelect value={clientId} onChange={setPicked} />
       </PageHeader>
       {clientId && db.clients.some((c) => c.id === clientId)

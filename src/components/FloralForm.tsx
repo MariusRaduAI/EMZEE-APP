@@ -29,15 +29,16 @@ export function FloralForm({ clientId }: { clientId: string }) {
     downloadCSV(`flori-${client?.couple || "eveniment"}.csv`, [
       ["Câmp", "Valoare"],
       ["Miri", client?.couple || ""], ["Data", client?.event_date || ""],
+      ["Paletă", (d.palette || []).map((p: any) => p.hex + (p.name ? ` (${p.name})` : "")).join(", ")],
       ["Stil", (d.styles || []).join(", ")], ["Culoare principală", d.main_color || ""], ["Culori accent", d.accent_colors || ""],
-      ["Mood / cuvinte-cheie", d.mood || ""], ["Link inspirație", d.inspo || ""],
+      ["Mood", d.mood || ""], ["Link inspirație", d.inspo || ""],
       ["Flori dorite", (d.flowers || []).join(", ")], ["De evitat", d.avoid || ""],
       ["Nr. mese", d.tables ?? ""], ["Aranjament mese", (d.table_style || []).join(", ")],
-      ["Prezidiu", d.presidiu || ""], ["Arcadă", d.arch || ""], ["Formă arcadă", (d.arch_shape || []).join(", ")], ["Arcadă închiriere/full", d.arch_mode || ""],
+      ["Prezidiu", d.presidiu || ""], ["Arcadă", d.arch || ""], ["Formă arcadă", (d.arch_shape || []).join(", ")], ["Arcadă mod", d.arch_mode || ""],
       ["Buchet mireasă", d.bride_bouquet || ""], ["Buchet nașă", d.godmother_bouquet || ""], ["Brățară nașă", d.godmother_bracelet || ""],
       ["Cocarde", d.boutonnieres || ""], ["Decor ceremonie", d.ceremony || ""], ["Alte zone", d.other_areas || ""],
       ["Elemente extra", (d.extras || []).join(", ")], ["Buget flori", d.budget ?? ""],
-      ["Reutilizare ceremonie→petrecere", d.reuse || ""], ["Locație & acces", d.access || ""], ["Note", d.notes || ""],
+      ["Reutilizare", d.reuse || ""], ["Locație & acces", d.access || ""], ["Note", d.notes || ""],
     ]);
   }
 
@@ -45,10 +46,15 @@ export function FloralForm({ clientId }: { clientId: string }) {
     <button onClick={() => toggle(list, val)} className={cx("chip", on ? colorCls(color) : "border-line text-muted hover:text-ink")}>{val}</button>
   );
 
+  const customFlowers = (d.flowers || []).filter((f: string) => !FLOWERS.includes(f));
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
-        <p className="text-sm text-muted max-w-xl">Brief de discovery pentru aranjamentele florale — completează-l în întâlnirea cu mirii ca să știi exact ce livrezi și ce ofertezi.</p>
+        <div>
+          <h2 className="text-lg font-bold text-ink">Conceptul floral</h2>
+          <p className="text-sm text-muted">Viziunea florală pentru {client?.couple || "evenimentul vostru"}.</p>
+        </div>
         <div className="flex gap-2">
           <button className="btn" onClick={exportExcel}><Icon.download /> Excel</button>
           <button className="btn" onClick={() => exportFloralPDF(client, d)}><Icon.download /> PDF</button>
@@ -56,25 +62,35 @@ export function FloralForm({ clientId }: { clientId: string }) {
         </div>
       </div>
 
+      {/* Paletă de culori */}
+      <div className="card p-5 mb-5">
+        <h3 className="section-title mb-4">Paletă de culori</h3>
+        <PaletteBuilder palette={d.palette || []} onChange={(p) => set({ palette: p })} />
+      </div>
+
       <div className="grid lg:grid-cols-2 gap-5">
-        {/* Stil & viziune */}
+        {/* Stil & flori */}
         <div className="card p-5 space-y-4">
-          <h3 className="section-title">Stil & viziune</h3>
+          <h3 className="section-title">Stil & flori</h3>
           <div>
-            <label className="label">Stil dorit</label>
+            <label className="label">Stil</label>
             <div className="flex flex-wrap gap-1.5">{STYLES.map((s) => <Chip key={s} list="styles" val={s} on={(d.styles || []).includes(s)} />)}</div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="label">Culoare principală</label><input className="input" value={d.main_color || ""} onChange={(e) => set({ main_color: e.target.value })} placeholder="ex. alb + verde" /></div>
             <div><label className="label">Culori accent</label><input className="input" value={d.accent_colors || ""} onChange={(e) => set({ accent_colors: e.target.value })} placeholder="ex. burgundy, auriu" /></div>
           </div>
-          <div><label className="label">Mood / cuvinte-cheie <span className="text-faint font-normal">· ce simțire vor</span></label><input className="input" value={d.mood || ""} onChange={(e) => set({ mood: e.target.value })} placeholder="ex. luminos, aerisit, romantic" /></div>
-          <div><label className="label">Link inspirație <span className="text-faint font-normal">· Pinterest / Instagram</span></label><input className="input" value={d.inspo || ""} onChange={(e) => set({ inspo: e.target.value })} placeholder="lipește link-ul lor" /></div>
+          <div><label className="label">Atmosferă / mood</label><input className="input" value={d.mood || ""} onChange={(e) => set({ mood: e.target.value })} placeholder="ex. luminos, aerisit, romantic" /></div>
+          <div><label className="label">Link inspirație</label><input className="input" value={d.inspo || ""} onChange={(e) => set({ inspo: e.target.value })} placeholder="Pinterest / Instagram" /></div>
           <div>
             <label className="label">Flori dorite</label>
-            <div className="flex flex-wrap gap-1.5">{FLOWERS.map((f) => <Chip key={f} list="flowers" val={f} on={(d.flowers || []).includes(f)} color="rose" />)}</div>
+            <div className="flex flex-wrap gap-1.5">
+              {FLOWERS.map((f) => <Chip key={f} list="flowers" val={f} on={(d.flowers || []).includes(f)} color="rose" />)}
+              {customFlowers.map((f: string) => <Chip key={f} list="flowers" val={f} on color="rose" />)}
+            </div>
+            <AddCustom placeholder="Adaugă altă floare…" onAdd={(v) => { if (!(d.flowers || []).includes(v)) set({ flowers: [...(d.flowers || []), v] }); }} />
           </div>
-          <div><label className="label">De evitat <span className="text-faint font-normal">· alergii, flori nedorite</span></label><input className="input" value={d.avoid || ""} onChange={(e) => set({ avoid: e.target.value })} placeholder="ex. crini, polen puternic" /></div>
+          <div><label className="label">De evitat</label><input className="input" value={d.avoid || ""} onChange={(e) => set({ avoid: e.target.value })} placeholder="ex. crini, polen puternic" /></div>
         </div>
 
         {/* Elemente & cantități */}
@@ -122,11 +138,75 @@ export function FloralForm({ clientId }: { clientId: string }) {
             <YesNo label="Reutilizare de la ceremonie la petrecere?" value={d.reuse} onChange={(v) => set({ reuse: v })} />
           </div>
           <div>
-            <label className="label">Note libere <span className="text-faint font-normal">· dacă nu au un stil exact, scrie aici tot ce vor / referințe / detalii</span></label>
-            <textarea className="input min-h-[110px] resize-y" value={d.notes || ""} onChange={(e) => set({ notes: e.target.value })} placeholder="Orice detaliu discutat: preferințe, restricții, obiecte la care țin, așteptări…" />
+            <label className="label">Note</label>
+            <textarea className="input min-h-[110px] resize-y" value={d.notes || ""} onChange={(e) => set({ notes: e.target.value })} placeholder="Orice detaliu, preferință sau referință…" />
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* -------- Paletă -------- */
+function PaletteBuilder({ palette, onChange }: { palette: { hex: string; name?: string }[]; onChange: (p: { hex: string; name?: string }[]) => void }) {
+  const [hex, setHex] = useState("#c98a9a");
+  const [name, setName] = useState("");
+
+  const normalize = (v: string) => {
+    let h = v.trim();
+    if (!h.startsWith("#")) h = "#" + h;
+    if (/^#[0-9a-fA-F]{3}$/.test(h)) h = "#" + h.slice(1).split("").map((c) => c + c).join("");
+    return /^#[0-9a-fA-F]{6}$/.test(h) ? h.toLowerCase() : null;
+  };
+  const add = () => { const h = normalize(hex); if (!h) return; onChange([...palette, { hex: h, name: name.trim() || undefined }]); setName(""); };
+  const remove = (i: number) => onChange(palette.filter((_, idx) => idx !== i));
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-end gap-2 mb-4">
+        <div>
+          <label className="label">Culoare</label>
+          <div className="flex items-center gap-2">
+            <input type="color" value={normalize(hex) || "#cccccc"} onChange={(e) => setHex(e.target.value)} className="w-11 h-11 rounded-lg border border-line2 cursor-pointer bg-transparent p-0.5" />
+            <input className="input !w-32 font-mono" value={hex} onChange={(e) => setHex(e.target.value)} placeholder="#RRGGBB" />
+          </div>
+        </div>
+        <div>
+          <label className="label">Nume (opțional)</label>
+          <input className="input !w-40" value={name} onChange={(e) => setName(e.target.value)} placeholder="ex. Sage, Blush" />
+        </div>
+        <button className="btn-brand" onClick={add}><Icon.plus /> Adaugă</button>
+      </div>
+
+      {palette.length === 0 ? (
+        <p className="text-sm text-muted">Nicio culoare încă. Alege o culoare și apasă Adaugă — apar aici ca paletă.</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+          {palette.map((c, i) => (
+            <div key={i} className="rounded-xl overflow-hidden border border-line shadow-card">
+              <div className="h-20" style={{ background: c.hex }} />
+              <div className="p-2.5 bg-panel flex items-center justify-between gap-1">
+                <div className="min-w-0">
+                  {c.name && <p className="text-sm font-semibold text-ink truncate">{c.name}</p>}
+                  <p className="text-[13px] font-mono text-muted uppercase">{c.hex}</p>
+                </div>
+                <button className="btn-ghost !p-1 shrink-0 hover:!text-rose" onClick={() => remove(i)}><Icon.close /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AddCustom({ onAdd, placeholder }: { onAdd: (v: string) => void; placeholder: string }) {
+  const [v, setV] = useState("");
+  return (
+    <div className="flex gap-2 mt-2">
+      <input className="input !py-1.5 max-w-[220px]" value={v} onChange={(e) => setV(e.target.value)} placeholder={placeholder}
+        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (v.trim()) { onAdd(v.trim()); setV(""); } } }} />
+      <button className="btn !py-1.5" onClick={() => { if (v.trim()) { onAdd(v.trim()); setV(""); } }}><Icon.plus /></button>
     </div>
   );
 }

@@ -554,6 +554,26 @@ export function exportFloralPDF(client: { couple: string; event_date: string; ve
   ctx.y = 56;
   const arr = (v: any) => Array.isArray(v) ? v : [];
 
+  const palette = arr(d.palette) as { hex: string; name?: string }[];
+  if (palette.length) {
+    sectionTitle(ctx, "Paletă de culori", C.rose);
+    const perRow = 6;
+    const gap = 4;
+    const sw = (CW - gap * (perRow - 1)) / perRow;
+    palette.forEach((c, i) => {
+      const col = i % perRow;
+      if (col === 0) ensure(ctx, 24);
+      const x = M + col * (sw + gap);
+      const y = ctx.y;
+      try { doc.setFillColor(...hexToRgb(c.hex)); } catch { doc.setFillColor(200, 200, 200); }
+      doc.roundedRect(x, y, sw, 15, 2, 2, "F");
+      doc.setFont(FONT, "normal"); doc.setFontSize(8); doc.setTextColor(...C.muted);
+      doc.text((c.hex || "").toUpperCase(), x + 1, y + 19);
+      if (c.name) { doc.setFont(FONT, "bold"); doc.setFontSize(8); doc.setTextColor(...C.ink); doc.text(c.name, x + 1, y + 23); }
+      if (col === perRow - 1 || i === palette.length - 1) ctx.y += (c.name || palette.some((p) => p.name)) ? 26 : 22;
+    });
+  }
+
   sectionTitle(ctx, "Stil & viziune", C.rose);
   chips(ctx, "Stil dorit", arr(d.styles));
   labelValue(ctx, "Culoare principală", d.main_color || "");
