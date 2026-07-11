@@ -17,6 +17,7 @@ const NAV = [
   { href: "/program", label: "Generator program", icon: Icon.clock },
   { href: "/checklist", label: "Checklist planner", icon: Icon.check },
   { href: "/profile", label: "Profil miri & invitați", icon: Icon.heart },
+  { href: "/flori", label: "Flori — brief", icon: Icon.flower },
   { href: "/offers", label: "Generator oferte", icon: Icon.offer },
   { href: "/inventory", label: "Inventar & Rentals", icon: Icon.box },
   { href: "/corporate", label: "Corporate", icon: Icon.building, badge: "În lucru" },

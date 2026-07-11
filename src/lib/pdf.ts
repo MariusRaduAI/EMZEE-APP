@@ -75,16 +75,18 @@ function sectionTitle(ctx: PdfCtx, title: string, color: RGB = C.brand) {
 function labelValue(ctx: PdfCtx, label: string, value: string) {
   if (!value) return;
   const doc = ctx.doc;
+  const labelW = 46;
+  doc.setFont(FONT, "bold");
+  doc.setFontSize(10);
+  const lines = doc.splitTextToSize(value, CW - labelW) as string[];
+  ensure(ctx, Math.max(lines.length * 5, 6) + 2); // rezervă spațiu pentru etichetă + valoare împreună
   doc.setFont(FONT, "normal");
   doc.setFontSize(9.5);
   doc.setTextColor(...C.muted);
-  const labelW = 46;
   doc.text(label, M, ctx.y);
   doc.setFont(FONT, "bold");
   doc.setFontSize(10);
   doc.setTextColor(...C.ink);
-  const lines = doc.splitTextToSize(value, CW - labelW) as string[];
-  ensure(ctx, lines.length * 5 + 2);
   doc.text(lines, M + labelW, ctx.y);
   ctx.y += Math.max(lines.length * 5, 6) + 1.5;
 }
@@ -528,4 +530,58 @@ function hexToRgb(hex: string): RGB {
   const h = hex.replace("#", "");
   const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+export function exportFloralPDF(client: { couple: string; event_date: string; venue: string; city?: string } | undefined, d: Record<string, any>) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  registerFont(doc);
+  const ctx: PdfCtx = { doc, y: 0 };
+
+  doc.setFillColor(...C.rose);
+  doc.rect(0, 0, PAGE_W, 44, "F");
+  doc.setFont(FONT, "bold"); doc.setFontSize(8); doc.setTextColor(255, 222, 230);
+  doc.text("B R I E F   F L O R A L", M, 15);
+  doc.setFontSize(22); doc.setTextColor(...C.white);
+  doc.text(client?.couple || "Eveniment", M, 27);
+  doc.setFont(FONT, "normal"); doc.setFontSize(10); doc.setTextColor(255, 224, 232);
+  const sub = [client?.event_date ? fmtDate(client.event_date) : "", client?.venue || client?.city || ""].filter(Boolean).join("   ·   ");
+  doc.text(sub, M, 35);
+  doc.setFont(FONT, "bold"); doc.setFontSize(14); doc.setTextColor(...C.white);
+  doc.text("EMZEE", PAGE_W - M, 20, { align: "right" });
+  doc.setFont(FONT, "normal"); doc.setFontSize(7); doc.setTextColor(255, 222, 230);
+  doc.text("Flowers Experience", PAGE_W - M, 25, { align: "right" });
+
+  ctx.y = 56;
+  const arr = (v: any) => Array.isArray(v) ? v : [];
+
+  sectionTitle(ctx, "Stil & viziune", C.rose);
+  chips(ctx, "Stil dorit", arr(d.styles));
+  labelValue(ctx, "Culoare principală", d.main_color || "");
+  labelValue(ctx, "Culori accent", d.accent_colors || "");
+  labelValue(ctx, "Mood / cuvinte-cheie", d.mood || "");
+  labelValue(ctx, "Link inspirație", d.inspo || "");
+  chips(ctx, "Flori dorite", arr(d.flowers));
+  labelValue(ctx, "De evitat", d.avoid || "");
+
+  sectionTitle(ctx, "Elemente & cantități", C.teal);
+  labelValue(ctx, "Nr. mese invitați", d.tables != null ? String(d.tables) : "");
+  chips(ctx, "Aranjament mese", arr(d.table_style));
+  labelValue(ctx, "Prezidiu", d.presidiu || "");
+  labelValue(ctx, "Arcadă", [d.arch, arr(d.arch_shape).join(", "), d.arch_mode].filter(Boolean).join(" · "));
+  labelValue(ctx, "Buchet mireasă", d.bride_bouquet || "");
+  labelValue(ctx, "Buchet nașă", d.godmother_bouquet || "");
+  labelValue(ctx, "Brățară nașă", d.godmother_bracelet || "");
+  labelValue(ctx, "Cocarde", d.boutonnieres || "");
+  labelValue(ctx, "Decor ceremonie", d.ceremony || "");
+  labelValue(ctx, "Alte zone", d.other_areas || "");
+  chips(ctx, "Elemente extra", arr(d.extras));
+
+  sectionTitle(ctx, "Logistică & note", C.amber);
+  labelValue(ctx, "Buget flori", d.budget != null ? d.budget + " RON" : "");
+  labelValue(ctx, "Locație & acces", d.access || "");
+  labelValue(ctx, "Reutilizare cerem.→petrecere", d.reuse || "");
+  labelValue(ctx, "Note", d.notes || "");
+
+  footer(doc);
+  doc.save(`brief-floral-${(client?.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
 }

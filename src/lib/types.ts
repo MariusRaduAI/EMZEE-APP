@@ -123,4 +123,5 @@ export interface DB {
   tasks: Task[];
   checklists: Record<string, ChecklistData>; // by client_id
   profiles: Record<string, ProfileData>; // by client_id
+  florals: Record<string, ProfileData>; // brief floral, by client_id
 }

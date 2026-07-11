@@ -120,6 +120,13 @@ create table if not exists couple_profiles (
   updated_at timestamptz default now()
 );
 
+-- ---------- FLORAL BRIEFS ----------
+create table if not exists floral_briefs (
+  client_id uuid primary key references clients(id) on delete cascade,
+  data jsonb default '{}'::jsonb,
+  updated_at timestamptz default now()
+);
+
 -- ============================================================
 -- Row Level Security — aplicație single-user (doar utilizatori logați)
 -- ============================================================
@@ -132,12 +139,13 @@ alter table offers enable row level security;
 alter table tasks enable row level security;
 alter table checklists enable row level security;
 alter table couple_profiles enable row level security;
+alter table floral_briefs enable row level security;
 
 -- Politici: orice utilizator AUTENTIFICAT are acces complet.
 do $$
 declare t text;
 begin
-  foreach t in array array['clients','games','inventory','allocations','program_items','offers','tasks','checklists','couple_profiles']
+  foreach t in array array['clients','games','inventory','allocations','program_items','offers','tasks','checklists','couple_profiles','floral_briefs']
   loop
     execute format('drop policy if exists "auth_all" on %I;', t);
     execute format('create policy "auth_all" on %I for all to authenticated using (true) with check (true);', t);

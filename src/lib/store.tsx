@@ -22,7 +22,7 @@ async function withTimeout<T>(p: PromiseLike<T>, ms = 12000): Promise<T> {
 function emptyDB(): DB {
   return {
     clients: [], games: [], inventory: [], allocations: [],
-    program_items: [], offers: [], tasks: [], checklists: {}, profiles: {},
+    program_items: [], offers: [], tasks: [], checklists: {}, profiles: {}, florals: {},
   };
 }
 
@@ -65,6 +65,7 @@ interface StoreValue {
   // forms
   saveChecklist: (clientId: string, data: ChecklistData) => Promise<void>;
   saveProfile: (clientId: string, data: ProfileData) => Promise<void>;
+  saveFloral: (clientId: string, data: ProfileData) => Promise<void>;
   reload: () => Promise<void>;
 }
 
@@ -114,6 +115,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     data.program_items = data.program_items || [];
     data.offers = data.offers || [];
     data.tasks = data.tasks || [];
+    (data as any).florals = (data as any).florals || {};
     setDb(data);
     persistLocal(data);
   }, [persistLocal]);
@@ -121,7 +123,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const loadCloud = useCallback(async () => {
     const sb = getSupabase();
     if (!sb) return;
-    const [clients, games, inventory, allocations, program_items, offers, tasks, checklists, profiles] =
+    const [clients, games, inventory, allocations, program_items, offers, tasks, checklists, profiles, florals] =
       await Promise.all([
         sb.from("clients").select("*").order("event_date", { ascending: true }),
         sb.from("games").select("*").order("name"),
@@ -132,11 +134,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         sb.from("tasks").select("*"),
         sb.from("checklists").select("*"),
         sb.from("couple_profiles").select("*"),
+        sb.from("floral_briefs").select("*"),
       ]);
     const clMap: Record<string, ChecklistData> = {};
     (checklists.data || []).forEach((r: any) => { clMap[r.client_id] = r.data || {}; });
     const prMap: Record<string, ProfileData> = {};
     (profiles.data || []).forEach((r: any) => { prMap[r.client_id] = r.data || {}; });
+    const flMap: Record<string, ProfileData> = {};
+    (florals.data || []).forEach((r: any) => { flMap[r.client_id] = r.data || {}; });
     setDb({
       clients: (clients.data || []) as Client[],
       games: (games.data || []) as Game[],
@@ -147,6 +152,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       tasks: (tasks.data || []) as Task[],
       checklists: clMap,
       profiles: prMap,
+      florals: flMap,
     });
   }, []);
 
@@ -416,11 +422,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     mutate((d) => { d.profiles = { ...d.profiles, [clientId]: data }; return d; });
   }, [mode, mutate]);
 
+  const saveFloral = useCallback(async (clientId: string, data: ProfileData) => {
+    if (mode === "cloud") await sb()!.from("floral_briefs").upsert({ client_id: clientId, data, updated_at: nowISO() });
+    mutate((d) => { d.florals = { ...d.florals, [clientId]: data }; return d; });
+  }, [mode, mutate]);
+
   const value: StoreValue = {
     ready, mode, authed, userEmail, db,
     signIn, signUp, signOut,
     saveClient, deleteClient, saveGame, deleteGame, saveInventory, deleteInventory,
-    setAllocations, saveProgram, saveOffer, deleteOffer, saveTask, deleteTask, saveChecklist, saveProfile, reload,
+    setAllocations, saveProgram, saveOffer, deleteOffer, saveTask, deleteTask, saveChecklist, saveProfile, saveFloral, reload,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -430,6 +441,6 @@ function structuredCloneSafe(d: DB): DB {
   return {
     clients: [...d.clients], games: [...d.games], inventory: [...d.inventory],
     allocations: [...d.allocations], program_items: [...d.program_items], offers: [...d.offers],
-    tasks: [...d.tasks], checklists: { ...d.checklists }, profiles: { ...d.profiles },
+    tasks: [...d.tasks], checklists: { ...d.checklists }, profiles: { ...d.profiles }, florals: { ...d.florals },
   };
 }
