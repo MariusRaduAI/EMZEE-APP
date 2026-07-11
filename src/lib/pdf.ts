@@ -479,35 +479,41 @@ export function exportProgramPDF(client: { couple: string; event_date: string; v
   doc.text("ACTIVITATE", M + 48, ctx.y);
   ctx.y += 9;
 
-  rows.forEach((r, i) => {
-    const descLines = r.description ? (doc.splitTextToSize(r.description, CW - 50) as string[]) : [];
-    const rowH = Math.max(9 + descLines.length * 4.2, 11);
-    ensure(ctx, rowH + 2);
-    // color stripe
+  rows.forEach((r) => {
+    const actLines = doc.splitTextToSize(r.activity || "—", CW - 52) as string[];
+    const descLines = r.description ? (doc.splitTextToSize(r.description, CW - 52) as string[]) : [];
+    const rowH = 8 + actLines.length * 4.8 + descLines.length * 4.4;
+    ensure(ctx, rowH);
+    const rowTop = ctx.y;
+    const baseTop = rowTop + 6; // baseline primei linii, cu padding sus
+    // bara de culoare
     doc.setFillColor(...hexToRgb(r.color));
-    doc.roundedRect(M, ctx.y - 4, 1.6, rowH - 2, 0.6, 0.6, "F");
+    doc.roundedRect(M, rowTop + 2, 1.7, rowH - 4, 0.7, 0.7, "F");
+    // ora
     doc.setFont(FONT, "bold");
     doc.setFontSize(12);
     doc.setTextColor(...C.brand);
-    doc.text(r.time, M + 4, ctx.y);
+    doc.text(r.time, M + 5, baseTop);
+    // durata
     doc.setFont(FONT, "normal");
     doc.setFontSize(9);
     doc.setTextColor(...C.muted);
-    doc.text(r.duration_min >= 60 ? `${Math.floor(r.duration_min / 60)}h${r.duration_min % 60 ? " " + (r.duration_min % 60) + "m" : ""}` : `${r.duration_min} min`, M + 26, ctx.y);
+    doc.text(r.duration_min >= 60 ? `${Math.floor(r.duration_min / 60)}h${r.duration_min % 60 ? " " + (r.duration_min % 60) + "m" : ""}` : `${r.duration_min} min`, M + 27, baseTop);
+    // activitate
     doc.setFont(FONT, "bold");
     doc.setFontSize(10.5);
     doc.setTextColor(...C.ink);
-    doc.text(r.activity || "—", M + 48, ctx.y);
+    doc.text(actLines, M + 50, baseTop);
     if (descLines.length) {
       doc.setFont(FONT, "normal");
       doc.setFontSize(9);
       doc.setTextColor(...C.muted);
-      doc.text(descLines, M + 48, ctx.y + 4.5);
+      doc.text(descLines, M + 50, baseTop + actLines.length * 4.8 + 0.5);
     }
-    ctx.y += rowH;
+    ctx.y = rowTop + rowH;
     doc.setDrawColor(...C.track);
     doc.setLineWidth(0.2);
-    doc.line(M, ctx.y - 2, PAGE_W - M, ctx.y - 2);
+    doc.line(M, ctx.y, PAGE_W - M, ctx.y);
   });
   if (!rows.length) {
     doc.setFont(FONT, "normal"); doc.setFontSize(10); doc.setTextColor(...C.faint);
