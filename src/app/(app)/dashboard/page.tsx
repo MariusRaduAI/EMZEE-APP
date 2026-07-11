@@ -76,82 +76,78 @@ export default function Dashboard() {
         <div className="card p-6 mb-6 text-center text-muted">Niciun eveniment programat. <Link href="/clients" className="text-brand-soft">Adaugă primul client →</Link></div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Stat label="Evenimente totale" value={stats.total} icon={<Icon.users />} />
-        <Stat label={`Venit ${stats.year}`} value={money(stats.revenue, "RON")} icon={<Icon.offer />} accent />
-        <Stat label="Confirmate" value={stats.confirmed} sub={`${stats.leads} lead-uri`} icon={<Icon.check />} />
-        <Stat label="Jocuri în bancă" value={stats.games} icon={<Icon.games />} />
+      {/* Quick actions — proeminente */}
+      <h2 className="text-lg font-bold text-ink mb-3">Acțiuni rapide</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+        <BigAction href="/clients" icon={<Icon.plus />} title="Client nou" hint="Adaugă eveniment" color="bg-brand" />
+        <BigAction href="/program" icon={<Icon.clock />} title="Program" hint="Timeline + PDF" color="bg-teal" />
+        <BigAction href="/offers" icon={<Icon.offer />} title="Ofertă" hint="Total automat" color="bg-green" />
+        <BigAction href="/checklist" icon={<Icon.check />} title="Checklist" hint="Planificare" color="bg-amber" />
+        <BigAction href="/profile" icon={<Icon.heart />} title="Profil miri" hint="Demografie" color="bg-rose" />
+        <BigAction href="/games" icon={<Icon.games />} title="Jocuri" hint={`${stats.games} jocuri`} color="bg-brand-soft" />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Upcoming list */}
-        <div className="lg:col-span-2 card">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-line">
-            <h3 className="font-semibold">Evenimente viitoare</h3>
-            <Link href="/calendar" className="btn-ghost text-xs">Vezi calendar <Icon.chevron className="w-4 h-4" /></Link>
-          </div>
-          <div className="divide-y divide-line/60">
-            {stats.upcoming.slice(0, 6).map((c) => {
-              const d = daysUntil(c.event_date);
-              return (
-                <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-panel2 transition-colors">
-                  <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[13px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-ink truncate">{c.couple}</p>
-                    <p className="text-xs text-muted">{fmtDate(c.event_date)}{c.city ? ` · ${c.city}` : ""}</p>
-                  </div>
-                  <StatusBadge status={c.status} />
-                  <span className={cx("text-xs tabular-nums w-16 text-right", d !== null && d <= 14 ? "text-amber" : "text-faint")}>{d}z</span>
-                </Link>
-              );
-            })}
-            {stats.upcoming.length === 0 && <p className="px-5 py-8 text-center text-sm text-muted">Niciun eveniment viitor.</p>}
-          </div>
-        </div>
+      {/* Stats — clickabile */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Stat href="/clients" label="Evenimente totale" value={stats.total} icon={<Icon.users />} />
+        <Stat href="/reports" label={`Venit ${stats.year}`} value={money(stats.revenue, "RON")} icon={<Icon.offer />} accent />
+        <Stat href="/clients" label="Confirmate" value={stats.confirmed} sub={`${stats.leads} lead-uri`} icon={<Icon.check />} />
+        <Stat href="/games" label="Jocuri în bancă" value={stats.games} icon={<Icon.games />} />
+      </div>
 
-        {/* Quick actions */}
-        <div className="card p-5">
-          <h3 className="font-semibold mb-4">Acțiuni rapide</h3>
-          <div className="space-y-2">
-            <QuickLink href="/program" icon={<Icon.clock />} title="Generează program" hint="Timeline pe intervale, export PDF/Excel" />
-            <QuickLink href="/offers" icon={<Icon.offer />} title="Creează ofertă" hint="MC, flori, rentals — total automat" />
-            <QuickLink href="/checklist" icon={<Icon.check />} title="Checklist eveniment" hint="Formular complet de planificare" />
-            <QuickLink href="/profile" icon={<Icon.heart />} title="Profil miri & invitați" hint="Stil, demografie, seating" />
-            <QuickLink href="/games" icon={<Icon.games />} title="Banca de jocuri" hint={`${stats.games} jocuri, filtrate pe categorii`} />
-          </div>
+      {/* Upcoming list */}
+      <div className="card">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-line">
+          <h3 className="font-bold text-ink">Evenimente viitoare</h3>
+          <Link href="/calendar" className="btn-ghost !text-sm">Vezi calendar <Icon.chevron className="w-4 h-4" /></Link>
+        </div>
+        <div className="divide-y divide-line/60">
+          {stats.upcoming.slice(0, 6).map((c) => {
+            const d = daysUntil(c.event_date);
+            return (
+              <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 px-5 py-3.5 hover:bg-panel2 transition-colors">
+                <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[13px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-ink truncate">{c.couple}</p>
+                  <p className="text-sm text-muted">{fmtDate(c.event_date)}{c.city ? ` · ${c.city}` : ""}</p>
+                </div>
+                <StatusBadge status={c.status} />
+                <span className={cx("text-sm font-semibold tabular-nums w-16 text-right", d !== null && d <= 14 ? "text-amber" : "text-faint")}>{d}z</span>
+              </Link>
+            );
+          })}
+          {stats.upcoming.length === 0 && <p className="px-5 py-8 text-center text-[15px] text-muted">Niciun eveniment viitor.</p>}
         </div>
       </div>
     </div>
   );
 }
 
-function Stat({ label, value, sub, icon, accent }: { label: string; value: React.ReactNode; sub?: string; icon: React.ReactNode; accent?: boolean }) {
+function BigAction({ href, icon, title, hint, color }: { href: string; icon: React.ReactNode; title: string; hint: string; color: string }) {
   return (
-    <div className="stat">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted">{label}</span>
-        <span className={cx("w-8 h-8 rounded-lg flex items-center justify-center", accent ? "bg-brand/15 text-brand-soft" : "bg-panel2 text-faint")}>{icon}</span>
+    <Link href={href} className="card p-4 flex flex-col gap-2.5 hover:border-brand/50 hover:-translate-y-0.5 transition-all">
+      <span className={cx("w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0", color)}>{icon}</span>
+      <div>
+        <p className="font-bold text-ink text-[15px] leading-tight">{title}</p>
+        <p className="text-sm text-muted">{hint}</p>
       </div>
-      <p className={cx("text-2xl font-bold tracking-tight", accent && "text-brand-soft")}>{value}</p>
-      {sub && <p className="text-xs text-faint">{sub}</p>}
-    </div>
+    </Link>
+  );
+}
+
+function Stat({ href, label, value, sub, icon, accent }: { href: string; label: string; value: React.ReactNode; sub?: string; icon: React.ReactNode; accent?: boolean }) {
+  return (
+    <Link href={href} className="stat hover:border-brand/50 hover:-translate-y-0.5 transition-all">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-semibold text-muted">{label}</span>
+        <span className={cx("w-9 h-9 rounded-lg flex items-center justify-center", accent ? "bg-brand/15 text-brand-soft" : "bg-panel2 text-faint")}>{icon}</span>
+      </div>
+      <p className={cx("text-3xl font-bold tracking-tight", accent && "text-brand-soft")}>{value}</p>
+      {sub ? <p className="text-sm text-faint">{sub}</p> : <p className="text-sm text-brand-soft font-semibold">Deschide →</p>}
+    </Link>
   );
 }
 
 function Tag({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
   return <span className="badge bg-panel2 border border-line text-muted">{icon}{children}</span>;
-}
-
-function QuickLink({ href, icon, title, hint }: { href: string; icon: React.ReactNode; title: string; hint: string }) {
-  return (
-    <Link href={href} className="flex items-center gap-3 p-3 rounded-xl border border-line hover:border-brand/40 hover:bg-brand/5 transition-colors group">
-      <span className="w-9 h-9 rounded-lg bg-panel2 border border-line flex items-center justify-center text-brand-soft group-hover:bg-brand/15 transition-colors">{icon}</span>
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-ink">{title}</p>
-        <p className="text-xs text-muted truncate">{hint}</p>
-      </div>
-      <Icon.chevron className="ml-auto text-faint w-4 h-4" />
-    </Link>
-  );
 }
