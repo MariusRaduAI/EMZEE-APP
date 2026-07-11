@@ -106,6 +106,27 @@ create table if not exists tasks (
   created_at timestamptz default now()
 );
 
+-- ---------- CORPORATE LEADS ----------
+create table if not exists corporate_leads (
+  id uuid primary key default gen_random_uuid(),
+  company text default '',
+  contact text default '',
+  email text default '',
+  phone text default '',
+  date date,
+  status text default 'lead',
+  participants integer,
+  format jsonb default '[]'::jsonb,
+  objectives jsonb default '[]'::jsonb,
+  activities jsonb default '[]'::jsonb,
+  location text default '',
+  catering text default '',
+  budget numeric,
+  deadline date,
+  notes text default '',
+  created_at timestamptz default now()
+);
+
 -- ---------- CHECKLISTS (planner) ----------
 create table if not exists checklists (
   client_id uuid primary key references clients(id) on delete cascade,
@@ -137,6 +158,7 @@ alter table allocations enable row level security;
 alter table program_items enable row level security;
 alter table offers enable row level security;
 alter table tasks enable row level security;
+alter table corporate_leads enable row level security;
 alter table checklists enable row level security;
 alter table couple_profiles enable row level security;
 alter table floral_briefs enable row level security;
@@ -145,7 +167,7 @@ alter table floral_briefs enable row level security;
 do $$
 declare t text;
 begin
-  foreach t in array array['clients','games','inventory','allocations','program_items','offers','tasks','checklists','couple_profiles','floral_briefs']
+  foreach t in array array['clients','games','inventory','allocations','program_items','offers','tasks','corporate_leads','checklists','couple_profiles','floral_briefs']
   loop
     execute format('drop policy if exists "auth_all" on %I;', t);
     execute format('create policy "auth_all" on %I for all to authenticated using (true) with check (true);', t);

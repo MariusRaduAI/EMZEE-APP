@@ -20,7 +20,7 @@ const NAV = [
   { href: "/flori", label: "Flori — brief", icon: Icon.flower },
   { href: "/offers", label: "Generator oferte", icon: Icon.offer },
   { href: "/inventory", label: "Inventar & Rentals", icon: Icon.box },
-  { href: "/corporate", label: "Corporate", icon: Icon.building, badge: "În lucru" },
+  { href: "/corporate", label: "Corporate", icon: Icon.building },
 ];
 
 export function Sidebar() {

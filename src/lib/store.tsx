@@ -5,7 +5,7 @@ import { getSupabase, SUPABASE_ENABLED } from "./supabaseClient";
 import { SEED_GAMES, SEED_INVENTORY } from "./seed";
 import { uid, nowISO } from "./utils";
 import {
-  DB, Client, Game, InventoryItem, Allocation, ProgramItem, Offer, Task,
+  DB, Client, Game, InventoryItem, Allocation, ProgramItem, Offer, Task, CorporateLead,
   ChecklistData, ProfileData,
 } from "./types";
 
@@ -22,7 +22,7 @@ async function withTimeout<T>(p: PromiseLike<T>, ms = 12000): Promise<T> {
 function emptyDB(): DB {
   return {
     clients: [], games: [], inventory: [], allocations: [],
-    program_items: [], offers: [], tasks: [], checklists: {}, profiles: {}, florals: {},
+    program_items: [], offers: [], tasks: [], corporate: [], checklists: {}, profiles: {}, florals: {},
   };
 }
 
@@ -62,6 +62,9 @@ interface StoreValue {
   // tasks
   saveTask: (t: Partial<Task> & { id?: string }) => Promise<Task>;
   deleteTask: (id: string) => Promise<void>;
+  // corporate
+  saveCorporate: (c: Partial<CorporateLead> & { id?: string }) => Promise<CorporateLead>;
+  deleteCorporate: (id: string) => Promise<void>;
   // forms
   saveChecklist: (clientId: string, data: ChecklistData) => Promise<void>;
   saveProfile: (clientId: string, data: ProfileData) => Promise<void>;
@@ -115,6 +118,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     data.program_items = data.program_items || [];
     data.offers = data.offers || [];
     data.tasks = data.tasks || [];
+    (data as any).corporate = (data as any).corporate || [];
     (data as any).florals = (data as any).florals || {};
     setDb(data);
     persistLocal(data);
@@ -123,7 +127,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const loadCloud = useCallback(async () => {
     const sb = getSupabase();
     if (!sb) return;
-    const [clients, games, inventory, allocations, program_items, offers, tasks, checklists, profiles, florals] =
+    const [clients, games, inventory, allocations, program_items, offers, tasks, corporate, checklists, profiles, florals] =
       await Promise.all([
         sb.from("clients").select("*").order("event_date", { ascending: true }),
         sb.from("games").select("*").order("name"),
@@ -132,6 +136,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         sb.from("program_items").select("*").order("position"),
         sb.from("offers").select("*"),
         sb.from("tasks").select("*"),
+        sb.from("corporate_leads").select("*"),
         sb.from("checklists").select("*"),
         sb.from("couple_profiles").select("*"),
         sb.from("floral_briefs").select("*"),
@@ -150,6 +155,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       program_items: (program_items.data || []) as ProgramItem[],
       offers: ((offers.data || []) as any[]).map((o) => ({ ...o, items: o.items || [] })) as Offer[],
       tasks: (tasks.data || []) as Task[],
+      corporate: (corporate.data || []) as CorporateLead[],
       checklists: clMap,
       profiles: prMap,
       florals: flMap,
@@ -411,6 +417,38 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     mutate((d) => { d.tasks = d.tasks.filter((x) => x.id !== id); return d; });
   }, [mode, mutate]);
 
+  // ---------- CORPORATE ----------
+  const saveCorporate = useCallback(async (c: Partial<CorporateLead> & { id?: string }) => {
+    const base: CorporateLead = {
+      id: c.id || uid(), company: c.company || "", contact: c.contact || "", email: c.email || "", phone: c.phone || "",
+      date: c.date || "", status: c.status || "lead", participants: c.participants ?? null, format: c.format || [],
+      objectives: c.objectives || [], activities: c.activities || [], location: c.location || "", catering: c.catering || "",
+      budget: c.budget ?? null, deadline: c.deadline || "", notes: c.notes || "", created_at: c.created_at || nowISO(),
+    };
+    if (mode === "cloud") {
+      const client = sb()!;
+      const { id: _id, created_at: _ca, ...rest } = base as any;
+      const dbRow = { ...rest, date: base.date || null, deadline: base.deadline || null };
+      if (c.id && db.corporate.some((x) => x.id === c.id)) {
+        const { error } = await withTimeout(client.from("corporate_leads").update(dbRow).eq("id", c.id));
+        if (error) throw new Error(error.message);
+        mutate((d) => { d.corporate = d.corporate.map((x) => x.id === c.id ? base : x); return d; });
+      } else {
+        const { data, error } = await withTimeout(client.from("corporate_leads").insert(dbRow).select().single());
+        if (error) throw new Error(error.message);
+        const saved = (data || base) as CorporateLead; mutate((d) => { d.corporate = [...d.corporate, saved]; return d; }); return saved;
+      }
+    } else {
+      mutate((d) => { if (c.id && d.corporate.some((x) => x.id === c.id)) d.corporate = d.corporate.map((x) => x.id === c.id ? base : x); else d.corporate = [...d.corporate, base]; return d; });
+    }
+    return base;
+  }, [mode, mutate, db.corporate]);
+
+  const deleteCorporate = useCallback(async (id: string) => {
+    if (mode === "cloud") await sb()!.from("corporate_leads").delete().eq("id", id);
+    mutate((d) => { d.corporate = d.corporate.filter((x) => x.id !== id); return d; });
+  }, [mode, mutate]);
+
   // ---------- CHECKLIST / PROFILE ----------
   const saveChecklist = useCallback(async (clientId: string, data: ChecklistData) => {
     if (mode === "cloud") await sb()!.from("checklists").upsert({ client_id: clientId, data, updated_at: nowISO() });
@@ -431,7 +469,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     ready, mode, authed, userEmail, db,
     signIn, signUp, signOut,
     saveClient, deleteClient, saveGame, deleteGame, saveInventory, deleteInventory,
-    setAllocations, saveProgram, saveOffer, deleteOffer, saveTask, deleteTask, saveChecklist, saveProfile, saveFloral, reload,
+    setAllocations, saveProgram, saveOffer, deleteOffer, saveTask, deleteTask, saveCorporate, deleteCorporate, saveChecklist, saveProfile, saveFloral, reload,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -441,6 +479,6 @@ function structuredCloneSafe(d: DB): DB {
   return {
     clients: [...d.clients], games: [...d.games], inventory: [...d.inventory],
     allocations: [...d.allocations], program_items: [...d.program_items], offers: [...d.offers],
-    tasks: [...d.tasks], checklists: { ...d.checklists }, profiles: { ...d.profiles }, florals: { ...d.florals },
+    tasks: [...d.tasks], corporate: [...d.corporate], checklists: { ...d.checklists }, profiles: { ...d.profiles }, florals: { ...d.florals },
   };
 }

@@ -100,6 +100,31 @@ export interface Task {
   created_at: string;
 }
 
+export interface CorporateLead {
+  id: string;
+  company: string;
+  contact: string;
+  email: string;
+  phone: string;
+  date: string;
+  status: string; // lead | oferta | confirmat | finalizat
+  participants: number | null;
+  format: string[];
+  objectives: string[];
+  activities: string[];
+  location: string;
+  catering: string;
+  budget: number | null;
+  deadline: string;
+  notes: string;
+  created_at: string;
+}
+
+export const CORP_FORMATS = ["La birou (2-3h)", "La birou (4h)", "Team-building 1 zi", "Team-building multi-zi", "After-work / team dinner", "Family day", "Petrecere companie"];
+export const CORP_OBJECTIVES = ["Coeziune echipă", "Comunicare", "Energizare / fun", "Leadership", "Onboarding", "Clarificare procese", "Sărbătorire / aniversare"];
+export const CORP_ACTIVITIES = ["Jocul cu slide-urile", "Jackbox Party", "Scavenger hunt urban", "Blind Tent", "Startup Wars", "Kahoot — Istoria firmei", "Sesiuni MBTI", "Brainstorming Walt Disney", "Board of Directors"];
+export const CORP_STATUS = ["lead", "oferta", "confirmat", "finalizat"];
+
 export const MEETING_TYPES = [
   "Întâlnire de cunoaștere",
   "Stabilire program",
@@ -121,6 +146,7 @@ export interface DB {
   program_items: ProgramItem[];
   offers: Offer[];
   tasks: Task[];
+  corporate: CorporateLead[];
   checklists: Record<string, ChecklistData>; // by client_id
   profiles: Record<string, ProfileData>; // by client_id
   florals: Record<string, ProfileData>; // brief floral, by client_id

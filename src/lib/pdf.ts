@@ -585,3 +585,47 @@ export function exportFloralPDF(client: { couple: string; event_date: string; ve
   footer(doc);
   doc.save(`brief-floral-${(client?.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
 }
+
+interface CorpLike { company: string; contact: string; email: string; phone: string; date: string; participants: number | null; format: string[]; objectives: string[]; activities: string[]; location: string; catering: string; budget: number | null; deadline: string; notes: string; }
+export function exportCorporatePDF(c: CorpLike) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  registerFont(doc);
+  const ctx: PdfCtx = { doc, y: 0 };
+  doc.setFillColor(...C.teal);
+  doc.rect(0, 0, PAGE_W, 44, "F");
+  doc.setFont(FONT, "bold"); doc.setFontSize(8); doc.setTextColor(200, 240, 236);
+  doc.text("B R I E F   C O R P O R A T E", M, 15);
+  doc.setFontSize(22); doc.setTextColor(...C.white);
+  doc.text(c.company || "Companie", M, 27);
+  doc.setFont(FONT, "normal"); doc.setFontSize(10); doc.setTextColor(210, 240, 237);
+  const sub = [c.contact, c.date ? fmtDate(c.date) : "", c.participants ? `${c.participants} participanți` : ""].filter(Boolean).join("   ·   ");
+  doc.text(sub, M, 35);
+  doc.setFont(FONT, "bold"); doc.setFontSize(14); doc.setTextColor(...C.white);
+  doc.text("EMZEE", PAGE_W - M, 20, { align: "right" });
+  doc.setFont(FONT, "normal"); doc.setFontSize(7); doc.setTextColor(200, 240, 236);
+  doc.text("Corporate Experience", PAGE_W - M, 25, { align: "right" });
+
+  ctx.y = 56;
+  const arr = (v: any) => Array.isArray(v) ? v : [];
+  sectionTitle(ctx, "Contact & context", C.teal);
+  labelValue(ctx, "Persoană contact", c.contact || "");
+  labelValue(ctx, "Email", c.email || "");
+  labelValue(ctx, "Telefon", c.phone || "");
+  labelValue(ctx, "Nr. participanți", c.participants != null ? String(c.participants) : "");
+  labelValue(ctx, "Data / perioada", c.date ? fmtDate(c.date) : "");
+  labelValue(ctx, "Locație", c.location || "");
+
+  sectionTitle(ctx, "Nevoi & obiective", C.brand);
+  chips(ctx, "Format dorit", arr(c.format));
+  chips(ctx, "Obiective", arr(c.objectives));
+  chips(ctx, "Activități dorite", arr(c.activities));
+
+  sectionTitle(ctx, "Logistică & buget", C.amber);
+  labelValue(ctx, "Catering", c.catering || "");
+  labelValue(ctx, "Buget estimativ", c.budget != null ? c.budget + " RON" : "");
+  labelValue(ctx, "Deadline propunere", c.deadline ? fmtDate(c.deadline) : "");
+  labelValue(ctx, "Note", c.notes || "");
+
+  footer(doc);
+  doc.save(`brief-corporate-${(c.company || "companie").replace(/[^\w& -]/g, "")}.pdf`);
+}
