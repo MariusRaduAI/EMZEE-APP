@@ -66,8 +66,11 @@ create table if not exists program_items (
   duration_min integer default 15,
   activity text default '',
   description text default '',
-  color text default '#6d6bff'
+  color text default '#5b57f0',
+  start_time text default ''
 );
+-- Dacă tabelul exista deja fără coloana start_time:
+alter table program_items add column if not exists start_time text default '';
 
 -- ---------- OFFERS (generator oferte) ----------
 create table if not exists offers (

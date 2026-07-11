@@ -53,6 +53,7 @@ export interface ProgramItem {
   activity: string;
   description: string;
   color: string;
+  start_time: string; // "HH:MM" setată manual, sau "" pentru calcul automat
 }
 
 export interface OfferItem {
