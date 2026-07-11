@@ -217,7 +217,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       svc_mc: c.svc_mc ?? true, svc_program: c.svc_program ?? false, svc_games: c.svc_games ?? false,
       svc_flowers: c.svc_flowers ?? false, svc_kids: c.svc_kids ?? false, svc_rentals: c.svc_rentals ?? false,
       svc_corporate: c.svc_corporate ?? false, guests: c.guests ?? null, notes: c.notes || "",
-      program_start: c.program_start || "16:00", created_at: c.created_at || nowISO(),
+      program_start: c.program_start || "16:00", program_starts: c.program_starts || {},
+      created_at: c.created_at || nowISO(),
     };
     if (mode === "cloud") {
       const client = sb()!;
@@ -313,7 +314,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   // ---------- PROGRAM ----------
   const saveProgram = useCallback(async (clientId: string, items: ProgramItem[]) => {
-    const normalized = items.map((it, i) => ({ ...it, id: it.id || uid(), client_id: clientId, position: i }));
+    const normalized = items.map((it, i) => ({ ...it, id: it.id || uid(), client_id: clientId, position: i, phase: it.phase || "petrecere" }));
     if (mode === "cloud") {
       const client = sb()!;
       await client.from("program_items").delete().eq("client_id", clientId);

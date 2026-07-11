@@ -437,3 +437,89 @@ export function exportOfferPDF(o: OfferLike) {
   footer(doc);
   doc.save(`oferta-${(o.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
 }
+
+interface ProgRow { time: string; duration_min: number; activity: string; description: string; color: string; }
+export function exportProgramPDF(client: { couple: string; event_date: string; venue: string; city?: string } | undefined, phaseLabel: string, rows: ProgRow[], startTime: string, endTime: string) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  registerFont(doc);
+  const ctx: PdfCtx = { doc, y: 0 };
+
+  doc.setFillColor(...C.brand);
+  doc.rect(0, 0, PAGE_W, 44, "F");
+  doc.setFont(FONT, "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(210, 212, 255);
+  doc.text("PROGRAM EVENIMENT · " + phaseLabel.toUpperCase(), M, 15);
+  doc.setFontSize(22);
+  doc.setTextColor(...C.white);
+  doc.text(client?.couple || "Eveniment", M, 27);
+  doc.setFont(FONT, "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(222, 223, 255);
+  const sub = [client?.event_date ? fmtDate(client.event_date) : "", client?.venue || client?.city || "", `${startTime}–${endTime}`].filter(Boolean).join("   ·   ");
+  doc.text(sub, M, 35);
+  doc.setFont(FONT, "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(...C.white);
+  doc.text("EMZEE", PAGE_W - M, 20, { align: "right" });
+  doc.setFont(FONT, "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(210, 212, 255);
+  doc.text("Wedding & Event Experience", PAGE_W - M, 25, { align: "right" });
+
+  ctx.y = 58;
+  // header rând
+  doc.setFillColor(238, 241, 248);
+  doc.roundedRect(M, ctx.y - 5, CW, 8, 1.5, 1.5, "F");
+  doc.setFont(FONT, "bold");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.muted);
+  doc.text("ORA", M + 4, ctx.y);
+  doc.text("DURATĂ", M + 26, ctx.y);
+  doc.text("ACTIVITATE", M + 48, ctx.y);
+  ctx.y += 9;
+
+  rows.forEach((r, i) => {
+    const descLines = r.description ? (doc.splitTextToSize(r.description, CW - 50) as string[]) : [];
+    const rowH = Math.max(9 + descLines.length * 4.2, 11);
+    ensure(ctx, rowH + 2);
+    // color stripe
+    doc.setFillColor(...hexToRgb(r.color));
+    doc.roundedRect(M, ctx.y - 4, 1.6, rowH - 2, 0.6, 0.6, "F");
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(...C.brand);
+    doc.text(r.time, M + 4, ctx.y);
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(...C.muted);
+    doc.text(r.duration_min >= 60 ? `${Math.floor(r.duration_min / 60)}h${r.duration_min % 60 ? " " + (r.duration_min % 60) + "m" : ""}` : `${r.duration_min} min`, M + 26, ctx.y);
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(10.5);
+    doc.setTextColor(...C.ink);
+    doc.text(r.activity || "—", M + 48, ctx.y);
+    if (descLines.length) {
+      doc.setFont(FONT, "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(...C.muted);
+      doc.text(descLines, M + 48, ctx.y + 4.5);
+    }
+    ctx.y += rowH;
+    doc.setDrawColor(...C.track);
+    doc.setLineWidth(0.2);
+    doc.line(M, ctx.y - 2, PAGE_W - M, ctx.y - 2);
+  });
+  if (!rows.length) {
+    doc.setFont(FONT, "normal"); doc.setFontSize(10); doc.setTextColor(...C.faint);
+    doc.text("Nicio activitate în această structură.", M, ctx.y + 2);
+  }
+
+  footer(doc);
+  doc.save(`program-${phaseLabel}-${(client?.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
+}
+
+function hexToRgb(hex: string): RGB {
+  const h = hex.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}

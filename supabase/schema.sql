@@ -28,6 +28,7 @@ create table if not exists clients (
   guests integer,
   notes text default '',
   program_start text default '16:00',
+  program_starts jsonb default '{}'::jsonb,
   created_at timestamptz default now()
 );
 
@@ -67,10 +68,13 @@ create table if not exists program_items (
   activity text default '',
   description text default '',
   color text default '#5b57f0',
-  start_time text default ''
+  start_time text default '',
+  phase text default 'petrecere'
 );
--- Dacă tabelul exista deja fără coloana start_time:
+-- Migrări dacă tabelul exista deja:
 alter table program_items add column if not exists start_time text default '';
+alter table program_items add column if not exists phase text default 'petrecere';
+alter table clients add column if not exists program_starts jsonb default '{}'::jsonb;
 
 -- ---------- OFFERS (generator oferte) ----------
 create table if not exists offers (

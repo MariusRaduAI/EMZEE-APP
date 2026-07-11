@@ -19,7 +19,8 @@ export interface Client {
   svc_corporate: boolean;
   guests: number | null;
   notes: string;
-  program_start: string; // "16:00"
+  program_start: string; // "16:00" (fallback)
+  program_starts?: Record<string, string>; // ora de start per fază
   created_at: string;
 }
 
@@ -54,7 +55,14 @@ export interface ProgramItem {
   description: string;
   color: string;
   start_time: string; // "HH:MM" setată manual, sau "" pentru calcul automat
+  phase: string; // "pregatiri" | "ceremonie" | "petrecere"
 }
+
+export const PROGRAM_PHASES = [
+  { key: "pregatiri", label: "Pregătiri", short: "Pregătiri", defaultStart: "08:00" },
+  { key: "ceremonie", label: "Ceremonia religioasă", short: "Ceremonie", defaultStart: "14:00" },
+  { key: "petrecere", label: "Nuntă & petrecere", short: "Petrecere", defaultStart: "18:00" },
+] as const;
 
 export interface OfferItem {
   id: string;
