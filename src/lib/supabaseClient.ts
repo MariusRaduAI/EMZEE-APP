@@ -17,6 +17,25 @@ export const SUPABASE_ENABLED = Boolean(url && key);
 
 let _client: SupabaseClient | null = null;
 
+// Lock corect pentru auth: serializează operațiile (evită curse la refresh token),
+// dar cu timeout — dacă nu poate obține lock-ul repede, rulează oricum (nu se blochează).
+async function safeLock<R>(name: string, acquireTimeout: number, fn: () => Promise<R>): Promise<R> {
+  const nav = typeof navigator !== "undefined" ? (navigator as any) : undefined;
+  if (nav?.locks?.request) {
+    const ctrl = new AbortController();
+    const ms = acquireTimeout && acquireTimeout > 0 ? acquireTimeout : 4000;
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    try {
+      return await nav.locks.request(name, { mode: "exclusive", signal: ctrl.signal }, async () => await fn());
+    } catch {
+      return await fn(); // lock indisponibil la timp — continuăm oricum
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  return await fn();
+}
+
 export function getSupabase(): SupabaseClient | null {
   if (!SUPABASE_ENABLED || !url || !key) return null;
   if (!_client) {
@@ -26,9 +45,7 @@ export function getSupabase(): SupabaseClient | null {
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: false,
-          // App single-user, single-tab: dezactivăm navigator lock-ul care poate
-          // provoca blocaje (getSession hang). Pass-through fără lock real.
-          lock: <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn(),
+          lock: safeLock,
         },
       });
     } catch (e) {
