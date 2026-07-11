@@ -146,6 +146,30 @@ export const MEETING_TYPES = [
 // Flexible JSON forms
 export type ChecklistData = Record<string, unknown>;
 export type ProfileData = Record<string, unknown>;
+export type ContractData = Record<string, unknown>;
+
+// Datele prestatorului (EMZEE) — memorate o dată, refolosite pe orice contract.
+export const PROVIDER_DEFAULTS = {
+  legal: "EMZEE Events",
+  repr: "Marius Radu",
+  cui: "",
+  reg: "",
+  address: "",
+  email: "office@wle.ro",
+  phone: "",
+  iban: "",
+  bank: "",
+};
+
+// Servicii tipice care pot fi contractate (pentru pre-completare).
+export const CONTRACT_SERVICES = [
+  "Servicii MC / prezentare eveniment",
+  "Coordonare & program eveniment",
+  "Jocuri & momente de animație",
+  "Aranjamente florale & decor",
+  "Zonă & animație copii (kids corner)",
+  "Închiriere echipamente (rentals)",
+];
 
 export interface DB {
   clients: Client[];
@@ -159,4 +183,5 @@ export interface DB {
   checklists: Record<string, ChecklistData>; // by client_id
   profiles: Record<string, ProfileData>; // by client_id
   florals: Record<string, ProfileData>; // brief floral, by client_id
+  contracts: Record<string, ContractData>; // contract, by client_id
 }

@@ -6,7 +6,7 @@ import { SEED_GAMES, SEED_INVENTORY } from "./seed";
 import { uid, nowISO } from "./utils";
 import {
   DB, Client, Game, InventoryItem, Allocation, ProgramItem, Offer, Task, CorporateLead,
-  ChecklistData, ProfileData,
+  ChecklistData, ProfileData, ContractData,
 } from "./types";
 
 const LS_KEY = "emzee_db_v1";
@@ -22,7 +22,7 @@ async function withTimeout<T>(p: PromiseLike<T>, ms = 12000): Promise<T> {
 function emptyDB(): DB {
   return {
     clients: [], games: [], inventory: [], allocations: [],
-    program_items: [], offers: [], tasks: [], corporate: [], checklists: {}, profiles: {}, florals: {},
+    program_items: [], offers: [], tasks: [], corporate: [], checklists: {}, profiles: {}, florals: {}, contracts: {},
   };
 }
 
@@ -69,6 +69,7 @@ interface StoreValue {
   saveChecklist: (clientId: string, data: ChecklistData) => Promise<void>;
   saveProfile: (clientId: string, data: ProfileData) => Promise<void>;
   saveFloral: (clientId: string, data: ProfileData) => Promise<void>;
+  saveContract: (clientId: string, data: ContractData) => Promise<void>;
   reload: () => Promise<void>;
 }
 
@@ -120,6 +121,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     data.tasks = data.tasks || [];
     (data as any).corporate = (data as any).corporate || [];
     (data as any).florals = (data as any).florals || {};
+    (data as any).contracts = (data as any).contracts || {};
     setDb(data);
     persistLocal(data);
   }, [persistLocal]);
@@ -127,7 +129,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const loadCloud = useCallback(async () => {
     const sb = getSupabase();
     if (!sb) return;
-    const [clients, games, inventory, allocations, program_items, offers, tasks, corporate, checklists, profiles, florals] =
+    const [clients, games, inventory, allocations, program_items, offers, tasks, corporate, checklists, profiles, florals, contracts] =
       await Promise.all([
         sb.from("clients").select("*").order("event_date", { ascending: true }),
         sb.from("games").select("*").order("name"),
@@ -140,6 +142,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         sb.from("checklists").select("*"),
         sb.from("couple_profiles").select("*"),
         sb.from("floral_briefs").select("*"),
+        sb.from("contracts").select("*"),
       ]);
     const clMap: Record<string, ChecklistData> = {};
     (checklists.data || []).forEach((r: any) => { clMap[r.client_id] = r.data || {}; });
@@ -147,6 +150,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     (profiles.data || []).forEach((r: any) => { prMap[r.client_id] = r.data || {}; });
     const flMap: Record<string, ProfileData> = {};
     (florals.data || []).forEach((r: any) => { flMap[r.client_id] = r.data || {}; });
+    const ctMap: Record<string, ContractData> = {};
+    (contracts.data || []).forEach((r: any) => { ctMap[r.client_id] = r.data || {}; });
     setDb({
       clients: (clients.data || []) as Client[],
       games: (games.data || []) as Game[],
@@ -159,6 +164,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       checklists: clMap,
       profiles: prMap,
       florals: flMap,
+      contracts: ctMap,
     });
   }, []);
 
@@ -279,7 +285,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       d.clients = d.clients.filter((x) => x.id !== id);
       d.allocations = d.allocations.filter((a) => a.client_id !== id);
       d.program_items = d.program_items.filter((p) => p.client_id !== id);
-      delete d.checklists[id]; delete d.profiles[id];
+      delete d.checklists[id]; delete d.profiles[id]; delete d.florals[id]; delete d.contracts[id];
       return d;
     });
   }, [mode, mutate]);
@@ -466,11 +472,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     mutate((d) => { d.florals = { ...d.florals, [clientId]: data }; return d; });
   }, [mode, mutate]);
 
+  const saveContract = useCallback(async (clientId: string, data: ContractData) => {
+    if (mode === "cloud") await withTimeout(sb()!.from("contracts").upsert({ client_id: clientId, data, updated_at: nowISO() }));
+    mutate((d) => { d.contracts = { ...d.contracts, [clientId]: data }; return d; });
+  }, [mode, mutate]);
+
   const value: StoreValue = {
     ready, mode, authed, userEmail, db,
     signIn, signUp, signOut,
     saveClient, deleteClient, saveGame, deleteGame, saveInventory, deleteInventory,
-    setAllocations, saveProgram, saveOffer, deleteOffer, saveTask, deleteTask, saveCorporate, deleteCorporate, saveChecklist, saveProfile, saveFloral, reload,
+    setAllocations, saveProgram, saveOffer, deleteOffer, saveTask, deleteTask, saveCorporate, deleteCorporate, saveChecklist, saveProfile, saveFloral, saveContract, reload,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -480,6 +491,6 @@ function structuredCloneSafe(d: DB): DB {
   return {
     clients: [...d.clients], games: [...d.games], inventory: [...d.inventory],
     allocations: [...d.allocations], program_items: [...d.program_items], offers: [...d.offers],
-    tasks: [...d.tasks], corporate: [...d.corporate], checklists: { ...d.checklists }, profiles: { ...d.profiles }, florals: { ...d.florals },
+    tasks: [...d.tasks], corporate: [...d.corporate], checklists: { ...d.checklists }, profiles: { ...d.profiles }, florals: { ...d.florals }, contracts: { ...d.contracts },
   };
 }

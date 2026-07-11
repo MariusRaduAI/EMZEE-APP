@@ -11,6 +11,7 @@ import { ProgramBuilder } from "@/components/ProgramBuilder";
 import { ChecklistForm } from "@/components/ChecklistForm";
 import { ProfileForm } from "@/components/ProfileForm";
 import { FloralForm } from "@/components/FloralForm";
+import { ContractForm } from "@/components/ContractForm";
 import { OfferBuilder } from "@/components/OfferBuilder";
 import { RentalsAllocator } from "@/components/RentalsAllocator";
 import { fmtDate, money, initials, daysUntil, cx, uid, nowISO } from "@/lib/utils";
@@ -23,6 +24,7 @@ const TABS = [
   { k: "profile", label: "Profil miri", icon: Icon.rings },
   { k: "floral", label: "Flori", icon: Icon.flower },
   { k: "offer", label: "Ofertă", icon: Icon.offer },
+  { k: "contract", label: "Contract", icon: Icon.contract },
   { k: "rentals", label: "Rentals", icon: Icon.box },
 ] as const;
 
@@ -158,6 +160,7 @@ export default function ClientDetail() {
       {tab === "checklist" && <ChecklistForm key={id} clientId={id} />}
       {tab === "profile" && <ProfileForm key={id} clientId={id} />}
       {tab === "floral" && <FloralForm key={id} clientId={id} />}
+      {tab === "contract" && <ContractForm key={id} clientId={id} />}
       {tab === "offer" && <OfferBuilder key={offerSeed.id} initial={offerSeed} />}
       {tab === "rentals" && <RentalsAllocator key={id} clientId={id} />}
 

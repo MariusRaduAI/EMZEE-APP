@@ -606,6 +606,126 @@ export function exportFloralPDF(client: { couple: string; event_date: string; ve
   doc.save(`brief-floral-${(client?.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
 }
 
+// ---- paragraf de contract (text corp, wrap + page-break) ----
+function para(ctx: PdfCtx, text: string, opts?: { size?: number; color?: RGB; gap?: number; bold?: boolean }) {
+  if (!text) return;
+  const doc = ctx.doc;
+  const size = opts?.size ?? 9.5;
+  doc.setFont(FONT, opts?.bold ? "bold" : "normal");
+  doc.setFontSize(size);
+  doc.setTextColor(...(opts?.color ?? C.muted));
+  const lh = size * 0.5;
+  const lines = doc.splitTextToSize(text, CW) as string[];
+  lines.forEach((ln) => {
+    ensure(ctx, lh + 1);
+    doc.text(ln, M, ctx.y);
+    ctx.y += lh;
+  });
+  ctx.y += opts?.gap ?? 2.5;
+}
+
+interface ContractParty { legal: string; repr: string; cui: string; reg: string; address: string; email: string; phone: string; iban: string; bank: string; }
+interface ContractLike {
+  no: string; date: string;
+  provider: ContractParty;
+  benef_name: string; benef_id: string; benef_address: string; benef_email: string; benef_phone: string;
+  event_type: string; event_date: string; event_location: string;
+  services: string[];
+  total: number | null; deposit: number | null; currency: string;
+  deposit_due: string; balance_due: string; pay_method: string;
+  cancellation: string; extra: string;
+  annexes: string[];
+}
+
+export function exportContractPDF(c: ContractLike) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  registerFont(doc);
+  const ctx: PdfCtx = { doc, y: 0 };
+  const cur = c.currency || "RON";
+  const p = c.provider;
+
+  // ---- Header ----
+  doc.setFillColor(...C.ink);
+  doc.rect(0, 0, PAGE_W, 40, "F");
+  doc.setFont(FONT, "bold"); doc.setFontSize(8); doc.setTextColor(160, 166, 190);
+  doc.text("C O N T R A C T   D E   P R E S T Ă R I   S E R V I C I I", M, 14);
+  doc.setFontSize(19); doc.setTextColor(...C.white);
+  doc.text(`Nr. ${c.no || "___"} / ${c.date ? fmtDate(c.date) : "___"}`, M, 25);
+  doc.setFont(FONT, "normal"); doc.setFontSize(9.5); doc.setTextColor(190, 194, 214);
+  doc.text(c.benef_name || "Beneficiar", M, 33);
+  doc.setFont(FONT, "bold"); doc.setFontSize(14); doc.setTextColor(...C.white);
+  doc.text("EMZEE", PAGE_W - M, 20, { align: "right" });
+  doc.setFont(FONT, "normal"); doc.setFontSize(7); doc.setTextColor(160, 166, 190);
+  doc.text("Wedding & Event Experience", PAGE_W - M, 25, { align: "right" });
+
+  ctx.y = 52;
+
+  // ---- Părțile ----
+  sectionTitle(ctx, "Părțile contractante", C.ink);
+  const provLine = [p.legal, p.repr ? `reprezentată de ${p.repr}` : "", p.cui ? `CUI ${p.cui}` : "", p.reg ? `Reg. ${p.reg}` : "", p.address, p.email, p.phone].filter(Boolean).join(", ");
+  para(ctx, `Prestator: ${provLine || p.legal || "—"}${p.iban ? `. Cont: ${p.iban}${p.bank ? ` (${p.bank})` : ""}.` : ""}`, { color: C.ink });
+  const benefLine = [c.benef_name, c.benef_id ? `CI/CNP ${c.benef_id}` : "", c.benef_address, c.benef_email, c.benef_phone].filter(Boolean).join(", ");
+  para(ctx, `Beneficiar: ${benefLine || c.benef_name || "—"}.`, { color: C.ink });
+  para(ctx, "Denumite în continuare, împreună, Părțile, au convenit încheierea prezentului contract, cu respectarea următoarelor clauze:", { gap: 1 });
+
+  // ---- Art. 1 Obiectul ----
+  sectionTitle(ctx, "Art. 1 — Obiectul contractului", C.brand);
+  para(ctx, `Prestatorul se obligă să presteze pentru Beneficiar serviciile de organizare și animație pentru evenimentul${c.event_type ? ` de tip „${c.event_type}"` : ""}${c.event_date ? `, din data de ${fmtDate(c.event_date)}` : ""}${c.event_location ? `, la locația ${c.event_location}` : ""}.`);
+  if (c.services.length) { chips(ctx, "Servicii contractate:", c.services); }
+
+  // ---- Art. 2 Preț & plată ----
+  sectionTitle(ctx, "Art. 2 — Prețul și modalitatea de plată", C.green);
+  const total = c.total || 0, dep = c.deposit || 0, rest = total - dep;
+  statTiles(ctx, [
+    { label: "Valoare totală", value: money(total, cur) },
+    { label: "Avans", value: money(dep, cur) },
+    { label: "Rest de plată", value: money(rest, cur) },
+  ]);
+  para(ctx, `Valoarea totală a serviciilor este de ${money(total, cur)}. La semnarea prezentului contract, Beneficiarul achită un avans de ${money(dep, cur)}${c.deposit_due ? `, până la data de ${c.deposit_due}` : ""}, care confirmă și rezervă data evenimentului. Diferența de ${money(rest, cur)} se achită ${c.balance_due || "cu cel puțin 7 zile înainte de eveniment"}.${c.pay_method ? ` Modalitate de plată: ${c.pay_method}.` : ""}`);
+
+  // ---- Art. 3 Obligațiile Prestatorului ----
+  sectionTitle(ctx, "Art. 3 — Obligațiile Prestatorului", C.brand);
+  ["Prestează serviciile la standardele profesionale convenite și la termenele stabilite.", "Se prezintă la locația și în intervalul orar agreat, cu echipamentele necesare.", "Anunță Beneficiarul, în timp util, cu privire la orice situație care poate afecta desfășurarea evenimentului."].forEach((t) => para(ctx, "• " + t, { gap: 1 }));
+
+  // ---- Art. 4 Obligațiile Beneficiarului ----
+  sectionTitle(ctx, "Art. 4 — Obligațiile Beneficiarului", C.brand);
+  ["Achită prețul la termenele și în condițiile din Art. 2.", "Pune la dispoziție informațiile și accesul necesare (locație, program, contacte).", "Asigură condițiile tehnice la locație (spațiu, curent electric) acolo unde este cazul."].forEach((t) => para(ctx, "• " + t, { gap: 1 }));
+
+  // ---- Art. 5 Anulare ----
+  sectionTitle(ctx, "Art. 5 — Anulare și rambursare", C.rose);
+  para(ctx, c.cancellation || "În cazul anulării evenimentului de către Beneficiar, avansul achitat nu se restituie, acesta acoperind rezervarea datei și pregătirile efectuate. Reprogramarea este posibilă, în funcție de disponibilitatea Prestatorului.");
+
+  // ---- Art. 6 Forță majoră & confidențialitate ----
+  sectionTitle(ctx, "Art. 6 — Forță majoră, confidențialitate, drept de imagine", C.slate);
+  para(ctx, "Niciuna dintre Părți nu răspunde pentru neexecutarea obligațiilor din cauza unui eveniment de forță majoră, dovedit conform legii. Părțile păstrează confidențialitatea datelor. Prestatorul poate folosi materiale foto/video din eveniment în scop de portofoliu, dacă Beneficiarul nu se opune în scris.");
+
+  // ---- Art. 7 Dispoziții finale ----
+  sectionTitle(ctx, "Art. 7 — Dispoziții finale", C.slate);
+  para(ctx, `Modificarea contractului se face doar prin acord scris al Părților. Litigiile se soluționează pe cale amiabilă, iar în caz contrar de instanțele competente. Prezentul contract s-a încheiat în 2 (două) exemplare, câte unul pentru fiecare Parte.`);
+  if (c.extra) { para(ctx, c.extra, { color: C.ink }); }
+  if (c.annexes.length) { chips(ctx, "Anexe (parte integrantă din contract):", c.annexes); }
+
+  // ---- Semnături ----
+  ensure(ctx, 34);
+  ctx.y += 6;
+  const half = CW / 2;
+  doc.setDrawColor(...C.track); doc.setLineWidth(0.4);
+  doc.line(M, ctx.y + 14, M + half - 8, ctx.y + 14);
+  doc.line(M + half + 8, ctx.y + 14, PAGE_W - M, ctx.y + 14);
+  doc.setFont(FONT, "bold"); doc.setFontSize(9.5); doc.setTextColor(...C.ink);
+  doc.text("PRESTATOR", M, ctx.y);
+  doc.text("BENEFICIAR", M + half + 8, ctx.y);
+  doc.setFont(FONT, "normal"); doc.setFontSize(9); doc.setTextColor(...C.muted);
+  doc.text(p.legal || "EMZEE", M, ctx.y + 5);
+  doc.text(c.benef_name || "—", M + half + 8, ctx.y + 5);
+  doc.setFontSize(8); doc.setTextColor(...C.faint);
+  doc.text("Semnătură / data", M, ctx.y + 19);
+  doc.text("Semnătură / data", M + half + 8, ctx.y + 19);
+
+  footer(doc);
+  doc.save(`contract-${(c.benef_name || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
+}
+
 interface CorpLike { company: string; contact: string; email: string; phone: string; date: string; participants: number | null; format: string[]; objectives: string[]; activities: string[]; location: string; catering: string; budget: number | null; deadline: string; notes: string; }
 export function exportCorporatePDF(c: CorpLike) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });

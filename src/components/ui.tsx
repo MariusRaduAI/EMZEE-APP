@@ -38,6 +38,7 @@ export const Icon = {
   copy: (p: IconProps) => <S {...p}><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M4 16V5a1 1 0 0 1 1-1h11" /></S>,
   chart: (p: IconProps) => <S {...p}><path d="M4 20V4M4 20h16M8 20v-6M12 20V9M16 20v-9M20 20V6" /></S>,
   agenda: (p: IconProps) => <S {...p}><rect x="4" y="4" width="16" height="17" rx="2.5" /><path d="M4 9h16M9 2.5v3M15 2.5v3M8 14.5l1.6 1.6L13 12.5" /></S>,
+  contract: (p: IconProps) => <S {...p}><path d="M6 3h8l4 4v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" /><path d="M13 3v4h4M8 17c1-1.5 2.2-1.5 3 0" /></S>,
 };
 
 /* ---------------- Modal ---------------- */
