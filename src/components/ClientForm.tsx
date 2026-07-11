@@ -6,7 +6,7 @@ import { Toggle } from "./ui";
 
 const emptyClient = (): Client => ({
   id: "", couple: "", family: "", event_date: "", city: "", venue: "", fee: null,
-  currency: "EUR", status: "lead", svc_mc: true, svc_program: false, svc_games: false,
+  currency: "RON", status: "lead", svc_mc: true, svc_program: false, svc_games: false,
   svc_flowers: false, svc_kids: false, svc_rentals: false, svc_corporate: false,
   guests: null, notes: "", program_start: "16:00", created_at: "",
 });
@@ -58,7 +58,7 @@ export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | n
           <div>
             <label className="label">Monedă</label>
             <select className="input !w-24" value={c.currency} onChange={(e) => set({ currency: e.target.value })}>
-              <option>EUR</option><option>RON</option>
+              <option>RON</option><option>EUR</option>
             </select>
           </div>
         </div>

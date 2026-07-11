@@ -79,7 +79,7 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Stat label="Evenimente totale" value={stats.total} icon={<Icon.users />} />
-        <Stat label={`Venit ${stats.year}`} value={money(stats.revenue, "EUR")} icon={<Icon.offer />} accent />
+        <Stat label={`Venit ${stats.year}`} value={money(stats.revenue, "RON")} icon={<Icon.offer />} accent />
         <Stat label="Confirmate" value={stats.confirmed} sub={`${stats.leads} lead-uri`} icon={<Icon.check />} />
         <Stat label="Jocuri în bancă" value={stats.games} icon={<Icon.games />} />
       </div>

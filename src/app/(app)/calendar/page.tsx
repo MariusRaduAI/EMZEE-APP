@@ -60,7 +60,7 @@ export default function CalendarPage() {
         <div className="card p-4 sm:p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">{MONTHS[month]} {year}</h2>
-            <span className="text-sm text-muted">{monthEvents.length} evenimente · {money(monthRevenue, "EUR")}</span>
+            <span className="text-sm text-muted">{monthEvents.length} evenimente · {money(monthRevenue, "RON")}</span>
           </div>
           <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
             {DOW.map((d) => <div key={d} className="text-center text-[11px] font-semibold text-faint uppercase py-1">{d}</div>)}

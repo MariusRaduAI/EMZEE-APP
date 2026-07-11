@@ -9,7 +9,7 @@ import { Offer } from "@/lib/types";
 import { uid, money, fmtDateShort, nowISO } from "@/lib/utils";
 
 function blankOffer(): Offer {
-  return { id: uid(), client_id: null, couple: "", event_date: "", venue: "", guests: null, currency: "EUR", discount: 0, notes: "", terms: "", items: [], created_at: nowISO() };
+  return { id: uid(), client_id: null, couple: "", event_date: "", venue: "", guests: null, currency: "RON", discount: 0, notes: "", terms: "", items: [], created_at: nowISO() };
 }
 
 export default function OffersPage() {

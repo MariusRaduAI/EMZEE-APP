@@ -213,7 +213,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const base: Client = {
       id: c.id || uid(), couple: c.couple || "Miri noi", family: c.family || "",
       event_date: c.event_date || "", city: c.city || "", venue: c.venue || "",
-      fee: c.fee ?? null, currency: c.currency || "EUR", status: c.status || "lead",
+      fee: c.fee ?? null, currency: c.currency || "RON", status: c.status || "lead",
       svc_mc: c.svc_mc ?? true, svc_program: c.svc_program ?? false, svc_games: c.svc_games ?? false,
       svc_flowers: c.svc_flowers ?? false, svc_kids: c.svc_kids ?? false, svc_rentals: c.svc_rentals ?? false,
       svc_corporate: c.svc_corporate ?? false, guests: c.guests ?? null, notes: c.notes || "",
@@ -328,7 +328,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const saveOffer = useCallback(async (o: Partial<Offer> & { id?: string }) => {
     const base: Offer = {
       id: o.id || uid(), client_id: o.client_id ?? null, couple: o.couple || "", event_date: o.event_date || "",
-      venue: o.venue || "", guests: o.guests ?? null, currency: o.currency || "EUR", discount: o.discount ?? 0,
+      venue: o.venue || "", guests: o.guests ?? null, currency: o.currency || "RON", discount: o.discount ?? 0,
       notes: o.notes || "", terms: o.terms || "", items: o.items || [], created_at: o.created_at || nowISO(),
     };
     if (mode === "cloud") {

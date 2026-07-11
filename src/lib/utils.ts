@@ -25,7 +25,7 @@ export function fmtDateShort(iso: string): string {
   return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
 }
 
-export function money(n: number | null | undefined, cur = "EUR"): string {
+export function money(n: number | null | undefined, cur = "RON"): string {
   if (n === null || n === undefined || isNaN(n)) return "—";
   return new Intl.NumberFormat("ro-RO").format(n) + " " + cur;
 }
