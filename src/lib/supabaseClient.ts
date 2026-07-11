@@ -11,7 +11,14 @@ export function getSupabase(): SupabaseClient | null {
   if (!SUPABASE_ENABLED) return null;
   if (!_client) {
     _client = createClient(url as string, key as string, {
-      auth: { persistSession: true, autoRefreshToken: true },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        // App single-user, single-tab: dezactivăm navigator lock-ul care poate
+        // provoca blocaje (getSession hang). Pass-through fără lock real.
+        lock: <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn(),
+      },
     });
   }
   return _client;

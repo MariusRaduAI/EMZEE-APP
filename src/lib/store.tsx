@@ -142,30 +142,44 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [mode, loadCloud, loadLocal]);
 
   useEffect(() => {
-    let active = true;
-    (async () => {
-      if (mode === "local") {
-        loadLocal();
-        setReady(true);
-        return;
-      }
-      const sb = getSupabase()!;
-      const { data } = await sb.auth.getSession();
-      if (!active) return;
-      if (data.session) {
-        setAuthed(true);
-        setUserEmail(data.session.user.email ?? null);
-        await loadCloud();
-      }
+    if (mode === "local") {
+      loadLocal();
       setReady(true);
-      sb.auth.onAuthStateChange(async (_e, session) => {
-        setAuthed(Boolean(session));
-        setUserEmail(session?.user.email ?? null);
-        if (session) await loadCloud();
-        else setDb(emptyDB());
-      });
+      return;
+    }
+    const sb = getSupabase();
+    if (!sb) { setReady(true); return; }
+
+    // Plasă de siguranță: aplicația nu trebuie să rămână NICIODATĂ pe spinner.
+    const failsafe = setTimeout(() => setReady(true), 2500);
+
+    const { data: sub } = sb.auth.onAuthStateChange(async (_e, session) => {
+      setAuthed(Boolean(session));
+      setUserEmail(session?.user.email ?? null);
+      if (session) { try { await loadCloud(); } catch {} }
+      else setDb(emptyDB());
+      clearTimeout(failsafe);
+      setReady(true);
+    });
+
+    (async () => {
+      try {
+        const result = await Promise.race([
+          sb.auth.getSession(),
+          new Promise<never>((_, rej) => setTimeout(() => rej(new Error("timeout")), 2500)),
+        ]);
+        const session = result.data.session;
+        if (session) {
+          setAuthed(true);
+          setUserEmail(session.user.email ?? null);
+          try { await loadCloud(); } catch {}
+        }
+      } catch { /* getSession blocat/timeout — continuăm oricum */ }
+      clearTimeout(failsafe);
+      setReady(true);
     })();
-    return () => { active = false; };
+
+    return () => { clearTimeout(failsafe); sub.subscription.unsubscribe(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
