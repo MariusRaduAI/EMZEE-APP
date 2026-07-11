@@ -77,7 +77,7 @@ export default function ClientDetail() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {d !== null && d >= 0 && <div className="text-center px-4 py-2 rounded-xl bg-panel2 border border-line"><p className="text-xl font-bold text-brand-soft tabular-nums leading-none">{d}</p><p className="text-[10px] text-muted mt-1">zile</p></div>}
+            {d !== null && d >= 0 && <div className="text-center px-4 py-2 rounded-xl bg-panel2 border border-line"><p className="text-xl font-bold text-brand-soft tabular-nums leading-none">{d}</p><p className="text-[12px] text-muted mt-1">zile</p></div>}
             <button className="btn" onClick={() => setEditing(true)}><Icon.edit /> Editează</button>
             <button className="btn-danger !px-2.5" onClick={async () => { if (await confirm(`Ștergi clientul „${client.couple}” și toate datele aferente?`)) { await deleteClient(client.id); router.push("/clients"); } }}><Icon.trash /></button>
           </div>

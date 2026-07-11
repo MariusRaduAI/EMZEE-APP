@@ -231,7 +231,7 @@ function VBars({ data, max, color, fmt, compact }: { data: { label: string; valu
           <div className="w-full h-32 flex items-end">
             <div className="w-full rounded-t-md transition-all" style={{ height: `${d.value ? Math.max((d.value / max) * 100, 3) : 0}%`, background: color, opacity: d.value ? 1 : 0 }} />
           </div>
-          <span className={cx("mt-1.5 text-faint tabular-nums truncate w-full text-center", compact ? "text-[10px]" : "text-xs")}>{d.label}</span>
+          <span className={cx("mt-1.5 text-faint tabular-nums truncate w-full text-center", compact ? "text-[12px]" : "text-xs")}>{d.label}</span>
         </div>
       ))}
     </div>

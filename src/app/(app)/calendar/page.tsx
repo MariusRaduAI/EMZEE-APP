@@ -63,7 +63,7 @@ export default function CalendarPage() {
             <span className="text-sm text-muted">{monthEvents.length} evenimente · {money(monthRevenue, "RON")}</span>
           </div>
           <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
-            {DOW.map((d) => <div key={d} className="text-center text-[11px] font-semibold text-faint uppercase py-1">{d}</div>)}
+            {DOW.map((d) => <div key={d} className="text-center text-[13px] font-semibold text-faint uppercase py-1">{d}</div>)}
             {grid.map((iso, i) => {
               if (!iso) return <div key={i} />;
               const day = Number(iso.slice(-2));
@@ -77,9 +77,9 @@ export default function CalendarPage() {
                   <span className={cx("text-xs font-medium tabular-nums", isToday ? "w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center" : "text-muted")}>{day}</span>
                   <div className="mt-1 space-y-0.5 w-full">
                     {events.slice(0, 2).map((e) => (
-                      <div key={e.id} className="text-[10px] leading-tight truncate px-1 py-0.5 rounded bg-brand/15 text-brand-soft font-medium">{e.couple}</div>
+                      <div key={e.id} className="text-[12px] leading-tight truncate px-1 py-0.5 rounded bg-brand/15 text-brand-soft font-medium">{e.couple}</div>
                     ))}
-                    {events.length > 2 && <div className="text-[10px] text-faint px-1">+{events.length - 2}</div>}
+                    {events.length > 2 && <div className="text-[12px] text-faint px-1">+{events.length - 2}</div>}
                   </div>
                 </button>
               );
@@ -120,7 +120,7 @@ export default function CalendarPage() {
 function EventCard({ c }: { c: any }) {
   return (
     <Link href={`/clients/${c.id}`} className="flex items-center gap-3 p-2.5 rounded-lg border border-line hover:border-brand/40 hover:bg-panel2 transition-colors">
-      <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[11px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
+      <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[13px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
       <div className="min-w-0 flex-1">
         <p className="font-medium text-ink text-sm truncate">{c.couple}</p>
         <p className="text-xs text-muted truncate">{c.venue || c.city || "—"}</p>

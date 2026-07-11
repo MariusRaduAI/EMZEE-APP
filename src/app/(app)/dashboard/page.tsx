@@ -96,7 +96,7 @@ export default function Dashboard() {
               const d = daysUntil(c.event_date);
               return (
                 <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-panel2 transition-colors">
-                  <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[11px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
+                  <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[13px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-ink truncate">{c.couple}</p>
                     <p className="text-xs text-muted">{fmtDate(c.event_date)}{c.city ? ` · ${c.city}` : ""}</p>

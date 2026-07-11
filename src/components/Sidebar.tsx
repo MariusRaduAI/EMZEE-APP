@@ -54,7 +54,7 @@ export function Sidebar() {
               <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className={cx("navlink", active && "navlink-active")}>
                 <n.icon className={cx("w-[18px] h-[18px] shrink-0", active ? "text-brand-soft" : "text-faint")} />
                 <span className="flex-1">{n.label}</span>
-                {n.badge && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber/15 text-amber font-semibold">{n.badge}</span>}
+                {n.badge && <span className="text-[12px] px-1.5 py-0.5 rounded bg-amber/15 text-amber font-semibold">{n.badge}</span>}
               </Link>
             );
           })}

@@ -81,7 +81,7 @@ export default function ClientsPage() {
                   <tr key={c.id} className="hover:bg-panel2/60 transition-colors">
                     <td className="td">
                       <Link href={`/clients/${c.id}`} className="flex items-center gap-3 group">
-                        <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[11px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
+                        <span className="w-9 h-9 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[13px] font-bold text-brand-soft shrink-0">{initials(c.couple).toUpperCase()}</span>
                         <div>
                           <p className="font-medium text-ink group-hover:text-brand-soft transition-colors">{c.couple}</p>
                           {c.family && <p className="text-xs text-faint">Familia {c.family}</p>}

@@ -5,30 +5,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#0a0c11",
-        panel: "#111520",
-        panel2: "#161b28",
-        line: "#232a3b",
-        line2: "#2e3750",
-        ink: "#e8ebf3",
-        muted: "#8b93a7",
-        faint: "#5c6479",
+        // Light theme — high contrast, foarte lizibil
+        bg: "#f4f6fb",       // fundal aplicație
+        panel: "#ffffff",    // carduri
+        panel2: "#eef1f8",   // zone insetate
+        line: "#dde2ee",     // borduri
+        line2: "#c7cee0",
+        ink: "#111726",      // text principal (aproape negru, contrast puternic)
+        muted: "#414a5e",    // text secundar — suficient de închis ca să se citească clar
+        faint: "#5a6377",    // text terțiar — tot lizibil, nu șters
         brand: {
-          DEFAULT: "#6d6bff",
-          soft: "#8b8aff",
-          dim: "#3d3d7a",
+          DEFAULT: "#5b57f0",
+          soft: "#4d49e0",   // pentru text/accente pe alb (mai închis = contrast)
+          dim: "#c9c8ff",
         },
-        teal: "#33d6c4",
-        amber: "#f5b53d",
-        rose: "#ff6b81",
-        green: "#37d399",
+        teal: "#0d9488",
+        amber: "#b45309",
+        rose: "#e11d48",
+        green: "#15935f",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 30px rgba(0,0,0,0.35)",
-        glow: "0 0 0 1px rgba(109,107,255,0.4), 0 8px 30px rgba(109,107,255,0.15)",
+        card: "0 1px 2px rgba(17,23,38,0.04), 0 6px 20px rgba(17,23,38,0.06)",
+        glow: "0 6px 20px rgba(91,87,240,0.25)",
       },
       borderRadius: {
         xl: "14px",

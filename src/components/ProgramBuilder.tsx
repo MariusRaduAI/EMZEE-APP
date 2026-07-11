@@ -85,11 +85,11 @@ export function ProgramBuilder({ clientId }: { clientId: string }) {
             <span className="w-1 self-stretch rounded-full shrink-0" style={{ background: it.color }} />
             <div className="flex flex-col items-center gap-1 pt-1.5 cursor-grab active:cursor-grabbing text-faint">
               <Icon.grip />
-              <span className="text-[11px] font-semibold text-muted tabular-nums">{i + 1}</span>
+              <span className="text-[13px] font-semibold text-muted tabular-nums">{i + 1}</span>
             </div>
             <div className="w-16 shrink-0 pt-1">
               <div className="text-lg font-bold tabular-nums text-brand-soft leading-none">{times[i]}</div>
-              <div className="text-[10px] text-faint mt-1">durează</div>
+              <div className="text-[12px] text-faint mt-1">durează</div>
               <input className="input !py-1 !px-2 !text-xs mt-0.5 !w-16" type="number" min={0} step={5} value={it.duration_min} onChange={(e) => update(i, { duration_min: Number(e.target.value) || 0 })} />
             </div>
             <div className="flex-1 min-w-0 space-y-2">

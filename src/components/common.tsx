@@ -38,7 +38,7 @@ export function ClientSelect({ value, onChange, placeholder }: { value: string; 
 export function ClientChip({ client }: { client: Client }) {
   return (
     <div className="flex items-center gap-2 text-sm">
-      <span className="w-7 h-7 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[11px] font-bold text-brand-soft">
+      <span className="w-7 h-7 rounded-lg bg-brand/12 border border-brand/25 flex items-center justify-center text-[13px] font-bold text-brand-soft">
         {client.couple.slice(0, 2).toUpperCase()}
       </span>
       <span className="font-medium text-ink">{client.couple}</span>
