@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { cx } from "@/lib/utils";
 
 /* ---------------- Icons (inline SVG, no deps) ---------------- */
@@ -44,6 +45,8 @@ export const Icon = {
 
 /* ---------------- Modal ---------------- */
 export function Modal({ open, onClose, title, children, wide }: { open: boolean; onClose: () => void; title?: string; children: React.ReactNode; wide?: boolean }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     if (!open) return;
     const h = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -51,18 +54,24 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
     document.body.style.overflow = "hidden";
     return () => { window.removeEventListener("keydown", h); document.body.style.overflow = ""; };
   }, [open, onClose]);
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-6 no-print" onMouseDown={onClose}>
-      <div className="fixed inset-0 bg-black/45" />
-      <div className={cx("relative card w-full flex flex-col max-h-[94dvh] fade-in", wide ? "max-w-6xl" : "max-w-3xl")} onMouseDown={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0">
-          <h3 className="font-bold text-ink text-lg">{title}</h3>
-          <button className="btn-ghost !p-1.5" onClick={onClose}><Icon.close /></button>
+  if (!open || !mounted) return null;
+  // Portal în <body>: iese din orice părinte cu `transform` (ex. .fade-in), ca `position:fixed`
+  // să se raporteze la fereastră — altfel modalul apărea prea sus/prea jos, în funcție de pagină.
+  return createPortal(
+    <div className="fixed inset-0 z-50 overflow-y-auto no-print modal-scope" onMouseDown={onClose}>
+      <div className="fixed inset-0 bg-black/50" />
+      {/* wrapper care centrează; dacă modalul e mai înalt decât ecranul, overlay-ul face scroll */}
+      <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6">
+        <div className={cx("card w-full flex flex-col max-h-[90dvh] fade-in", wide ? "max-w-5xl" : "max-w-2xl")} onMouseDown={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0">
+            <h3 className="font-bold text-ink text-lg">{title}</h3>
+            <button className="btn-ghost !p-1.5" onClick={onClose}><Icon.close /></button>
+          </div>
+          <div className="p-6 overflow-y-auto">{children}</div>
         </div>
-        <div className="p-6 overflow-y-auto">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
