@@ -50,6 +50,6 @@ export function LoginScreen() {
 function translate(msg: string): string {
   const m = msg.toLowerCase();
   if (m.includes("invalid login")) return "Email sau parolă greșite.";
-  if (m.includes("email not confirmed")) return "Emailul nu e confirmat. Vezi setările Supabase (dezactivează „Confirm email").";
+  if (m.includes("email not confirmed")) return "Emailul nu e confirmat. Dezactivează confirmarea emailului în Supabase, apoi încearcă din nou.";
   return msg;
 }
