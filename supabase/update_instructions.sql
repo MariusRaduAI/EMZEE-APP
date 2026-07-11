@@ -1,6 +1,7 @@
--- EMZEE seed: jocuri (cu instrucțiuni) + inventar. Rulează după schema.sql.
+-- Actualizează instrucțiunile jocurilor existente (rulează în Supabase SQL Editor).
+-- Sigur de rulat de mai multe ori.
 
-insert into games (name, category, instructions) values ('Cupluri celebre', 'Echipe / Fete vs Băieți', 'Jocul cuplurilor celebre – O punga de jeleuri (castigatorul jocului poate sa fie echipa baietilor/fetelor) / Find the match
+update games set instructions = 'Jocul cuplurilor celebre – O punga de jeleuri (castigatorul jocului poate sa fie echipa baietilor/fetelor) / Find the match
 1.      Adam – Eva
 2.      Bestia - Frumoasa
 3.      Avraam – Sara
@@ -63,8 +64,8 @@ Priscila
 Samson
 Solomon
 Urie
-Zaharia');
-insert into games (name, category, instructions) values ('Couple IQ', 'Cuplu', 'Cât de bine vă cunoașteți — întrebări despre partener.
+Zaharia' where name = 'Cupluri celebre';
+update games set instructions = 'Cât de bine vă cunoașteți — întrebări despre partener.
 
 Jocul cuplurilor
 Pentru baieti
@@ -98,8 +99,8 @@ Intrebari pentru sotie
 2.0
 3.0
 4.0
-5.0');
-insert into games (name, category, instructions) values ('Icebreaker - Licitatia', 'Ice-breaker', 'Ice Breaker - Licitatia (selectie de 10 categorii relevante)
+5.0' where name = 'Couple IQ';
+update games set instructions = 'Ice Breaker - Licitatia (selectie de 10 categorii relevante)
 Cuplu prezent cu cei mai multi ani de Casnicie (Premiu: rama de tablou in care se pot pune mai multe poze)
 Cel mai tanar Cuplu, Casatorit (Palete ping-pong)
 Cel mai lung drum de acasa pana la nunta (o mini-harta cu Romania sau un mini-glob pamantesc)
@@ -130,13 +131,9 @@ Cel mai tanar bunic (sa spuna varsta)
 Regulile jocului de licitație:
 1. Voi anunța o categorie, cum ar fi „Cel mai lung drum până la nuntă” sau „Cei mai mulți ani de căsnicie”.
 2. Cei care se încadrează ridică mâna, iar câștigătorul, cu recordul cel mai mare sau cel mai mic, va fi invitat să vină în față.
-3. Fiecare câștigător va primi un premiu și va împărtăși un scurt sfat sau „secret”.');
-insert into games (name, category, instructions) values ('Icebreaker', 'Ice-breaker', 'Tombola - biletele per categorii');
-insert into games (name, category, instructions) values ('Cutitul si furculita Classic', 'Miri', '');
-insert into games (name, category, instructions) values ('Cutitul si furculita Tip Bingo', 'Pe mese', '');
-insert into games (name, category, instructions) values ('Cutitul si furculita Friends Match', 'Selecție invitați', '');
-insert into games (name, category, instructions) values ('Literele mirilor', 'Pe mese', '');
-insert into games (name, category, instructions) values ('Scaunele arhaice', 'Individual', 'Scaunele arhaice
+3. Fiecare câștigător va primi un premiu și va împărtăși un scurt sfat sau „secret”.' where name = 'Icebreaker - Licitatia';
+update games set instructions = 'Tombola - biletele per categorii' where name = 'Icebreaker';
+update games set instructions = 'Scaunele arhaice
 RUNDA 1 - FETE
 1. vrea sa imi aduceti rumanele  – farduri in graiul banatean)
 2. - sa aduca un obiect care se gaseste in cuhnie – in griul moldovenesc bucatarie)
@@ -157,10 +154,8 @@ RUNDA 2 - BAIETI
 16. - selfie cu o persoana de onoare – cavaler sau domnisoara
 17. - vreau sa faceti un selfie cu un obiect care arata ca un firang – firang – perdea – bucovina
 18. - vreau sa faceti poza cu cineva care a fost holtei – barbat necasatorit (mirele) – maramures
-The Wedding Trivia');
-insert into games (name, category, instructions) values ('Kahoot / Wedding IQ Battle', 'Toți invitații', '');
-insert into games (name, category, instructions) values ('Scaunele muzicale (Varianta baby)', 'Bully / Baby', '');
-insert into games (name, category, instructions) values ('Scavenger hunt', 'Echipe / Fete vs Băieți', 'Bride & Groom Scavinger Hunt – 10 sucuri cu pai (o echipa va avea 10 participanti, castigatorul jocului poate sa fie echipa baietilor/fetelor) Echipele se vor tine de maini si nu vor rupe lantul
+The Wedding Trivia' where name = 'Scaunele arhaice';
+update games set instructions = 'Bride & Groom Scavinger Hunt – 10 sucuri cu pai (o echipa va avea 10 participanti, castigatorul jocului poate sa fie echipa baietilor/fetelor) Echipele se vor tine de maini si nu vor rupe lantul
 Lista miresei
 Un selfie cu tatal miresei
 Un selfie cu mirele si mireasa sarutandu-se
@@ -185,14 +180,14 @@ Selfie Scavinger Hunt (individual): O lupa de preferat sau un pachet de gume de 
 8.      Selfie in timp ce bei un pahar de apa
 9.      Selfie cu o prajitura
 10.   Selfie cu mireasa si mirele
-11. Selfie cu orice masina din parcare');
-insert into games (name, category, instructions) values ('Shazam', 'Echipe / Fete vs Băieți', 'Shazam
+11. Selfie cu orice masina din parcare' where name = 'Scavenger hunt';
+update games set instructions = 'Shazam
 Guess the first 5 seconds playlist
 Exista un playlist de melodii din mai multe industrii de muzica - rap, hip-hop, pop, harfa
 Daca echipa nu ghiceste in 20 de secunde - poatae sa raspunda cealalta echipa
 1punct daca va ghici artistul sau numele piesei
-3 puncte daca va ghici ambele');
-insert into games (name, category, instructions) values ('Sing the lyrics', 'Echipe / Fete vs Băieți', 'Ghiceste versurile (echipe pe baieti si fete) – fiecare echipa pe rand, primeste o bucata dintr-o melodie cunoscuta, se opreste melodia, iar ei trebuie sa continue versurile. (o cutie de pliculete de ceai faina, vor primi fiecare cate un pliculet ca sa il bea pentru voce)
+3 puncte daca va ghici ambele' where name = 'Shazam';
+update games set instructions = 'Ghiceste versurile (echipe pe baieti si fete) – fiecare echipa pe rand, primeste o bucata dintr-o melodie cunoscuta, se opreste melodia, iar ei trebuie sa continue versurile. (o cutie de pliculete de ceai faina, vor primi fiecare cate un pliculet ca sa il bea pentru voce)
 Vrei sa pleci dar numa numa iei – O-Zone
 Ani de liceu
 Tu esti iubirea mea din cer – Alin si Florina Jivan
@@ -205,17 +200,16 @@ Eu nu ma tem – Biji
 Din dragoste te-am ales
 I will always love you – Whitney Houston
 Dragostea – Profides
-Din tine am venit iubire – David Preuteasa');
-insert into games (name, category, instructions) values ('Masa meselor', 'Pe mese', '');
-insert into games (name, category, instructions) values ('Pe aceesi unda', '1 vs 1', 'Jocul “pe aceeasi unda” – Doua bratari identice (castigatorul poate sa fie un cuplu sau pereche de frati)
+Din tine am venit iubire – David Preuteasa' where name = 'Sing the lyrics';
+update games set instructions = 'Jocul “pe aceeasi unda” – Doua bratari identice (castigatorul poate sa fie un cuplu sau pereche de frati)
 Culoare | Fruct | Animal | Tara | Nume | Cifra
 Numar | Oras | Leguma | Peste | Sport | Litera
 Animal l Cifra | Nume | Culoare | Zi a saptamanii | Forma geometrica
 Fruct | Sport | Tara | Oras | Luna a saptamanii | Anotimp
 Leguma | Prajitura| Culoare | Forma geometrica | Pasare | Sport
-Litera | Fruct | Tara | Numar | Animal | Parte a corpului');
-insert into games (name, category, instructions) values ('Teatru improvizat', 'Echipe / Fete vs Băieți', 'cum s-au cunoscut mirii, cererea in casatorie, o zi din casatoria lor: varianta ei/a lui');
-insert into games (name, category, instructions) values ('Find the guest - BINGO', 'Toți invitații', 'Find the guest - BINGO
+Litera | Fruct | Tara | Numar | Animal | Parte a corpului' where name = 'Pe aceesi unda';
+update games set instructions = 'cum s-au cunoscut mirii, cererea in casatorie, o zi din casatoria lor: varianta ei/a lui' where name = 'Teatru improvizat';
+update games set instructions = 'Find the guest - BINGO
 O persoana care nu are social media (fara Insta, BeReal, nimic)
 O persoana care poarta ochelari
 O persoana cu mustata (baiat sau fata, nu conteaza)
@@ -262,8 +256,8 @@ Cineva care poarta un smartwatch
 Cineva care poarta ochelari de soare
 Cineva care locuieste la inaltime (etajul 7+)
 Cineva care are chelie
-Cineva care');
-insert into games (name, category, instructions) values ('Box and words', 'Echipe / Fete vs Băieți', 'Box & Words
+Cineva care' where name = 'Find the guest - BINGO';
+update games set instructions = 'Box & Words
 RATON
 TIGRU
 MUNTE
@@ -308,11 +302,10 @@ Cutie 1
 R
 M
 C
-L');
-insert into games (name, category, instructions) values ('Intrebari & Cantari', 'Selecție invitați', 'intrebari formate & titluri de cantari deja formate');
-insert into games (name, category, instructions) values ('Guess the popular couple', 'Echipe / Fete vs Băieți', 'images) - se afiseaza doar unul din cuplu');
-insert into games (name, category, instructions) values ('Guess the voice/ hand/ hair', 'Selecție invitați', '');
-insert into games (name, category, instructions) values ('Bride & Groom Trivia Game (on paper)', 'Pe mese', 'Bingo Bride & Groom: fara premiu (o poza cu mirii)
+L' where name = 'Box and words';
+update games set instructions = 'intrebari formate & titluri de cantari deja formate' where name = 'Intrebari & Cantari';
+update games set instructions = 'images) - se afiseaza doar unul din cuplu' where name = 'Guess the popular couple';
+update games set instructions = 'Bingo Bride & Groom: fara premiu (o poza cu mirii)
 LEVEL 1 (BASIC)
 Cine s-a indragostit mai intai?
 Cine a facut prima miscare?
@@ -363,10 +356,8 @@ Cine este mai predispus să mănânce ciocolata pe ascuns atunci cand ati stabil
 Cine a adus mai multă lumină în viața celuilalt?
 Cine a ales să iubească chiar și în ziua când era mai greu?
 Cine e motivul pentru care celălalt zâmbește azi?
-Dacă rămâne o ultimă bucată de desert, cine spune primul „ia-o tu”?');
-insert into games (name, category, instructions) values ('Ice-breaker: Find your match (cartonase cupluri celebre amestecate / cu pozele mirilor)', 'Ice-breaker', '');
-insert into games (name, category, instructions) values ('Keyword speeches', 'Speech / Keywords', '');
-insert into games (name, category, instructions) values ('Batalia Generatiilor', 'Echipe', 'Batalia Generatiilor
+Dacă rămâne o ultimă bucată de desert, cine spune primul „ia-o tu”?' where name = 'Bride & Groom Trivia Game (on paper)';
+update games set instructions = 'Batalia Generatiilor
 Vin cate 3 reprezentati din partea fiecarei varste - 0-10 / 10-20 /20-30 / 30-40 / 40-50 / 50-60
 Sunt 12 provocari - la anumite provocari pot sa faca echipe 0-20 / 20-40 / 40-60
 Provocarea 1: Creeaza o lista cu cati mai multi membri din Patrula Catelusilor
@@ -380,15 +371,15 @@ Provocarea 8: Creeaza o lista cu cati mai multi campioni din League Of Legends
 Provocarea 9: Creeaza o lista cati mai multi Youtuberi / Tik-Tokeri
 Provocarea 10: Enumera cat mai multe posturi TV si emisiuni cunoscute din anii 90
 Provocarea 11: Creeaza o lista de cat mai multe titluri de ziare
-Provocarea 12: Creeaza o lista de alimente care se puteau obtine doar cu cardul in perioada regimului comunist');
-insert into games (name, category, instructions) values ('Cursa alinturilor', 'Cuplu', 'Cursa alinturilor
+Provocarea 12: Creeaza o lista de alimente care se puteau obtine doar cu cardul in perioada regimului comunist' where name = 'Batalia Generatiilor';
+update games set instructions = 'Cursa alinturilor
 Se aleg minim 5 cupluri
 Fiecare cuplu sta la 20 metri distanta
 Pentru fiecare alint, partenerul (Baiatul) va face un pas spre partener
 Odata ce un alint a fost folosit, nu se mai pot face alti pasi
 Voi spune next odata la 5 secunde - daca cineva nu a spus un cuvant in 5 secunde va fi sarit
-Castiga cuplul care a ajuns la partener');
-insert into games (name, category, instructions) values ('Guess the food / drink', 'Echipe / Fete vs Băieți', 'Guess the fruit/vegetable
+Castiga cuplul care a ajuns la partener' where name = 'Cursa alinturilor';
+update games set instructions = 'Guess the fruit/vegetable
 Punctaj
 1.0
 1.0
@@ -410,12 +401,11 @@ Punctaj
 4.0
 5.0
 5.0
-6.0');
-insert into games (name, category, instructions) values ('The Diaper Race', 'Bully / Baby', 'The Diaper Race
+6.0' where name = 'Guess the food / drink';
+update games set instructions = 'The Diaper Race
 Sunt 5 baloane - si 5 pampersi dati cu nutella + 5 pampersi curati + servetele umede
-Castiga cine alearga la pampersul murdar, desface pampersul, curata balonul, i-a pampersul curat si il pune la loc pe balon fara sa il sparga si ajunge apoi inapoi cu balonul inapoi.');
-insert into games (name, category, instructions) values ('Cursa in saci (clasic)', 'Echipe / Fete vs Băieți', '');
-insert into games (name, category, instructions) values ('Noise Cancel War', '1 vs 1', 'Noise Cancel Game
+Castiga cine alearga la pampersul murdar, desface pampersul, curata balonul, i-a pampersul curat si il pune la loc pe balon fara sa il sparga si ajunge apoi inapoi cu balonul inapoi.' where name = 'The Diaper Race';
+update games set instructions = 'Noise Cancel Game
 1 punct
 1. Amfibian
 2. Carburator
@@ -466,9 +456,9 @@ insert into games (name, category, instructions) values ('Noise Cancel War', '1 
 47. Chitanțier
 48. Broscuță
 49. Combustibil
-50. Florărie');
-insert into games (name, category, instructions) values ('Scaune si pahare muzicale', 'Echipe / Fete vs Băieți', 'pahare pe masa - la fiecare runda, pleaca 2-3 pahare) - se rotesc in jurul mesei');
-insert into games (name, category, instructions) values ('Daca in casa proprie (sceneta)', 'Scenetă', 'Daca-n casa proprie de-acum te vei muta
+50. Florărie' where name = 'Noise Cancel War';
+update games set instructions = 'pahare pe masa - la fiecare runda, pleaca 2-3 pahare) - se rotesc in jurul mesei' where name = 'Scaune si pahare muzicale';
+update games set instructions = 'Daca-n casa proprie de-acum te vei muta
 I-a priveste aici ce munca te va astepta
 Sa speli geamul sa speli geamul - si pe jos (carpe)
 Sa inmoi pensula in culoare si sa zugravesti (pensule)
@@ -477,11 +467,8 @@ Sa masori, sa potrivesti si sa repari (o ruleta)
 Sa stergi praful sa stergi praful si sa aspiri (un pamatuf)
 Sa gatesti mancare buna pentru toti (un polonic)
 Nu radeti in gura mare, fiindca e asa
-Nu radeti in gura mare, poate veti urma');
-insert into games (name, category, instructions) values ('Escape Room - The Stolen Rings', 'Pe mese', '');
-insert into games (name, category, instructions) values ('Treasure Hunt', 'Echipe / Fete vs Băieți', '');
-insert into games (name, category, instructions) values ('The objects race', 'Echipe / Fete vs Băieți', '');
-insert into games (name, category, instructions) values ('The Wedding Heist', 'Pe mese / Echipe', 'THE WEDDING HEIST - MYSTERY GAME
+Nu radeti in gura mare, poate veti urma' where name = 'Daca in casa proprie (sceneta)';
+update games set instructions = 'THE WEDDING HEIST - MYSTERY GAME
 🎯 CONCEPT: Un joc de detectiv interactiv cu indicii ascunse prin toată locația!
 📋 REGULILE:
 POVESTEA: "Inelele mirilor au fost furate! Găsiți hotul!"
@@ -489,8 +476,8 @@ Echipele primesc primul indiciu care duce la următorul
 8 indicii ascunse prin locație (bar, bucătărie, toaletă, etc.)
 La fiecare stație rezolvă o mini-puzzle sau ghicitoare
 PLOT TWIST: Hotul e unul din invitați (actor secret)
-Prima echipă care îl găsește și explică "cum a furat" câștigă');
-insert into games (name, category, instructions) values ('UBER-ul imparatesc (reinterpretare Caleasca Imparateasca)', 'Selecție invitați', 'UBER-ul imparatesc
+Prima echipă care îl găsește și explică "cum a furat" câștigă' where name = 'The Wedding Heist';
+update games set instructions = 'UBER-ul imparatesc
 Într-un magnific palat din Rahova, locuia faimoasa familie împărătească Ignat: Împăratul Andrei și Împărăteasa Loriana. Aceștia erau cunoscuți nu doar pentru inteligența lor, dar și pentru simplitatea și modestia cu care își trăiau viața, în ciuda statutului lor regal. Oricât de incredibili ar fi fost, obișnuiau să-și facă singuri piața, iar în fiecare luni dimineață, soferul lor de 5 stele îi ducea la piața preferată din București – Piața Obor.
 O dimineață de luni... cu surprize
 Era 6 dimineața în cartierul Sebastian. Împăratul și Împărăteasa coborau solemn treptele palatului, pregătiți pentru rutina săptămânală. În fața lor, se afla aceeași mașină ca întotdeauna, aceeași roți și aceleași scaune confortabile. Dar ceva părea... diferit.
@@ -520,8 +507,8 @@ Când au încercat să plece din nou, mașina abia pornește. Șoferul se uită 
 La piață, în sfârșit!
 După acest episod memorabil, ajung, în sfârșit, la Piața Obor. Împăratul și Împărăteasa își fac cumpărăturile regale, luând legume, fructe și, bineînțeles, cele mai bune zarzavaturi.
 Cu cumpărăturile în portbagaj și o poveste de neuitat, se întorc în siguranță acasă, la magnificul lor palat din Rahova.
-Moralul poveștii? Chiar și cei mai glorioși împărați au zile în care planurile pot fi date peste cap, mai ales când un șofer de pompe funebre devine, pentru o zi, șofer de Uber!');
-insert into games (name, category, instructions) values ('How many objects', 'Pe mese / Echipe', 'How many objects?
+Moralul poveștii? Chiar și cei mai glorioși împărați au zile în care planurile pot fi date peste cap, mai ales când un șofer de pompe funebre devine, pentru o zi, șofer de Uber!' where name = 'UBER-ul imparatesc (reinterpretare Caleasca Imparateasca)';
+update games set instructions = 'How many objects?
 Batalia celor doua armate (Contra-Cronometru 60 secunde sau Obiectiv - alegem ce varianta e mai buna)
 Runde contra-cronometru (câștigă tabăra care a adus cele mai multe obiecte)
 Carduri Visa/Mastercard
@@ -538,16 +525,16 @@ Kendama
 Fotografie fizica
 Factura fiscală
 Orice obiect care începe cu litera M
-Voal de mireasa');
-insert into games (name, category, instructions) values ('Telecomanda (sceneta)', 'Selecție invitați', 'Telecomanda
+Voal de mireasa' where name = 'How many objects';
+update games set instructions = 'Telecomanda
 Mirii isi arata momentul de cerere in casatorie
 Vine echipa fetelor si a baietilor - jucam telecomanda
 Sa joace sceneata in stil
 Preistoric
-Shakespeare');
-insert into games (name, category, instructions) values ('Chair Competition', 'Selecție invitați', 'Aruncatul papionului');
-insert into games (name, category, instructions) values ('Skanderberg Competition', 'Selecție invitați', 'Aruncatul buchetului');
-insert into games (name, category, instructions) values ('Wedding Gladiator Olympics', '1 vs 1', 'Wedding Olympics
+Shakespeare' where name = 'Telecomanda (sceneta)';
+update games set instructions = 'Aruncatul papionului' where name = 'Chair Competition';
+update games set instructions = 'Aruncatul buchetului' where name = 'Skanderberg Competition';
+update games set instructions = 'Wedding Olympics
 De la fiecare masa vor trimite un campion - cine doreste - de preferat sa nu fie aceeasi persoana mai mult de 2 ori
 Fie se foloseste pe slide, pe ecran - roata provocarilor - pe fiecare felie se afla o proba, in functie de ce proba vine - isi trimit oamenii
 Proba 1: Cerc darts mingii velcro - cine tinteste cel mai bine
@@ -560,29 +547,29 @@ Proba 7: Skanderberg challenge
 Proba 8: Hartia igienica - sa o deruleze pe toata
 Proba 9: Cel mai departe pahar (exista o linie delimitata, mai multi oameni din echipa pot face orice strategie sa isi duca un pahar mai departe, fara sa atinga zona cu mainile sau picioarele sau cu orice altceva
 Proba 10: Pass the chair - de la o linie de start pana la o linie de finish - cine ajunge cu scaunul in ultima parte castiga
-Proba 11: The blind mission - la o distanta de 20 metri - trebuie sa duci paharul din punctul a in punctul b - memorezi vizual, te legi la ochi si apoi duci paharul fara sa vezi');
-insert into games (name, category, instructions) values ('Big Brain Battle', 'Echipe / Fete vs Băieți', 'Despre Relatii, Istoria lumii, Muzica, Istoria mirilor, Geografia Romaniei, Autoturisme, Gastronomie, Moto (Te pui cu blondele');
-insert into games (name, category, instructions) values ('Wedding Brain Olympics', 'Echipe / Fete vs Băieți', '10 mini-games battle');
-insert into games (name, category, instructions) values ('Labirintul Vocilor', 'Cuplu', 'Couples game - unul din cuplu este legat la ochi - participa aproximativ 10 cupluri, eu pun multe pahare, ei trebuie sa nu le calce, cu juriu pe fiecare. runde rapide de 3 vs 3. cine a castigat primeste premiu. fiecare cu culoarul lui.');
-insert into games (name, category, instructions) values ('Impossible Paper Plane / Love is in the Air', '1 vs 1', 'cuplurile sunt legate la maini cu velcro (doar stanga cu dreapta) - li se arata cum se face un avion, primul cuplu care arunca avionul cel mai departe de linia de finish castiga.');
-insert into games (name, category, instructions) values ('The Challenge Wheel', '1 vs 1', 'roata fizica, pe care am trecute provocarile - skanderberg, game of ken (spike), etc.');
-insert into games (name, category, instructions) values ('Golden Seat', 'Ice-breaker', 'cea mai simpla tombola - sub scaunul fiecaruia se afla un bilet auriu');
-insert into games (name, category, instructions) values ('Thug of war', 'Pe mese / Echipe', 'sfoara groasa (se echilibreaza - 10 barbati vs 20 fete, toti copiii vs 1/2 barbati');
-insert into games (name, category, instructions) values ('Guess the baby', 'Pe mese / Echipe', 'poze cu invitatii de cand erau bebelusi - echipele sa fie de la miri, mireasa combinate');
-insert into games (name, category, instructions) values ('The Emoji Game', 'Selecție invitați', 'necesita videoproiector) - buzz button - sau lingura - sau pliciul (primul plici pe masa');
-insert into games (name, category, instructions) values ('Ice-breaker "The Survivor": Toata lumea in picioare - dupa fiecare categorie, oamenii stau jos daca nu sunt in categorie - ramane 1 singur castigator', 'Ice-breaker', 'Ice-Breaker - The Survivor
+Proba 11: The blind mission - la o distanta de 20 metri - trebuie sa duci paharul din punctul a in punctul b - memorezi vizual, te legi la ochi si apoi duci paharul fara sa vezi' where name = 'Wedding Gladiator Olympics';
+update games set instructions = 'Despre Relatii, Istoria lumii, Muzica, Istoria mirilor, Geografia Romaniei, Autoturisme, Gastronomie, Moto (Te pui cu blondele' where name = 'Big Brain Battle';
+update games set instructions = '10 mini-games battle' where name = 'Wedding Brain Olympics';
+update games set instructions = 'Couples game - unul din cuplu este legat la ochi - participa aproximativ 10 cupluri, eu pun multe pahare, ei trebuie sa nu le calce, cu juriu pe fiecare. runde rapide de 3 vs 3. cine a castigat primeste premiu. fiecare cu culoarul lui.' where name = 'Labirintul Vocilor';
+update games set instructions = 'cuplurile sunt legate la maini cu velcro (doar stanga cu dreapta) - li se arata cum se face un avion, primul cuplu care arunca avionul cel mai departe de linia de finish castiga.' where name = 'Impossible Paper Plane / Love is in the Air';
+update games set instructions = 'roata fizica, pe care am trecute provocarile - skanderberg, game of ken (spike), etc.' where name = 'The Challenge Wheel';
+update games set instructions = 'cea mai simpla tombola - sub scaunul fiecaruia se afla un bilet auriu' where name = 'Golden Seat';
+update games set instructions = 'sfoara groasa (se echilibreaza - 10 barbati vs 20 fete, toti copiii vs 1/2 barbati' where name = 'Thug of war';
+update games set instructions = 'poze cu invitatii de cand erau bebelusi - echipele sa fie de la miri, mireasa combinate' where name = 'Guess the baby';
+update games set instructions = 'necesita videoproiector) - buzz button - sau lingura - sau pliciul (primul plici pe masa' where name = 'The Emoji Game';
+update games set instructions = 'Ice-Breaker - The Survivor
 Toata lumea se ridica in picioare
-Daca nu esti nascut in luna mirilor - ex. ianuarie si Septembrie, stai jos');
-insert into games (name, category, instructions) values ('Choose tie right line', 'Selecție invitați', 'intrebarile de la pantofii - dar toti prietenii se aseaza in spatele mirelui sau a miresei - ca forma de raspuns');
-insert into games (name, category, instructions) values ('Shakespeare competition', 'Pe mese / Echipe', 'fiecare masa primeste un set de keywords - extra puncte daca il canta');
-insert into games (name, category, instructions) values ('The Mistery Box', 'Echipe / Fete vs Băieți', 'o cutie pentru fiecare echipa cu aceleasi 10 alimente/bauturi infoliate in stalion - cine termina primul sacul castiga');
-insert into games (name, category, instructions) values ('Water Ping', 'Echipe / Fete vs Băieți', 'Pong (Clasic Beer Ping-Pong) - Pahare in piramida cu apa in ele (doua mese lungi de la bise) + ping-pong balls');
-insert into games (name, category, instructions) values ('Keyword Karaoke', 'Echipe / Fete vs Băieți', 'primesti un cuvant - primul care vine cu o melodie si fredoneaza melodia avand keyword in cantec castiga');
-insert into games (name, category, instructions) values ('Step the step', 'Selecție invitați', 'se creeaza mai multe chenare cu scoci colorat pe podea) - timp de 1 minut, trebuie sa sara in acel chenar pana la final - la final cine ramane in chenar castiga');
-insert into games (name, category, instructions) values ('Rings race', 'Echipe / Fete vs Băieți', 'exista 2 randuri - o sfoara la fiecare de 50 de metri prin care treci inelul - prin majoritatea invitatilor - cine ajunge primul la final castiga');
-insert into games (name, category, instructions) values ('Wedding Alias', 'Selecție invitați', '3 persoane din fiecare echipa - cate cuvinte pot face in 90 de secunde - cele doua persoane vad cuvantul - apoi pe rand vor forma o propozitie, spunand cate un cuvant pe rand - a 3-a persoana este cea care ghiceste');
-insert into games (name, category, instructions) values ('Cups Holder', 'Necategorisit', 'mirele si mireasa sau reprezentantii mirilor - stau intr-o pozitie pe scaun - si invitatii vor pune cat mai multe pahare pe ei fara sa cada');
-insert into games (name, category, instructions) values ('Ice breaker', 'Ice-breaker', 'Ice breaker - Cash, Drink and Clean
+Daca nu esti nascut in luna mirilor - ex. ianuarie si Septembrie, stai jos' where name = 'Ice-breaker "The Survivor": Toata lumea in picioare - dupa fiecare categorie, oamenii stau jos daca nu sunt in categorie - ramane 1 singur castigator';
+update games set instructions = 'intrebarile de la pantofii - dar toti prietenii se aseaza in spatele mirelui sau a miresei - ca forma de raspuns' where name = 'Choose tie right line';
+update games set instructions = 'fiecare masa primeste un set de keywords - extra puncte daca il canta' where name = 'Shakespeare competition';
+update games set instructions = 'o cutie pentru fiecare echipa cu aceleasi 10 alimente/bauturi infoliate in stalion - cine termina primul sacul castiga' where name = 'The Mistery Box';
+update games set instructions = 'Pong (Clasic Beer Ping-Pong) - Pahare in piramida cu apa in ele (doua mese lungi de la bise) + ping-pong balls' where name = 'Water Ping';
+update games set instructions = 'primesti un cuvant - primul care vine cu o melodie si fredoneaza melodia avand keyword in cantec castiga' where name = 'Keyword Karaoke';
+update games set instructions = 'se creeaza mai multe chenare cu scoci colorat pe podea) - timp de 1 minut, trebuie sa sara in acel chenar pana la final - la final cine ramane in chenar castiga' where name = 'Step the step';
+update games set instructions = 'exista 2 randuri - o sfoara la fiecare de 50 de metri prin care treci inelul - prin majoritatea invitatilor - cine ajunge primul la final castiga' where name = 'Rings race';
+update games set instructions = '3 persoane din fiecare echipa - cate cuvinte pot face in 90 de secunde - cele doua persoane vad cuvantul - apoi pe rand vor forma o propozitie, spunand cate un cuvant pe rand - a 3-a persoana este cea care ghiceste' where name = 'Wedding Alias';
+update games set instructions = 'mirele si mireasa sau reprezentantii mirilor - stau intr-o pozitie pe scaun - si invitatii vor pune cat mai multe pahare pe ei fara sa cada' where name = 'Cups Holder';
+update games set instructions = 'Ice breaker - Cash, Drink and Clean
 Sub o farfurie - se afla o bancnota de 5 lei
 Persoana care are bancnota o tine in mana sus
 O alta persoana de la masa este rugata sa i-a un pahar in mana
@@ -597,12 +584,12 @@ Runda 2: Stop
 **cand apare tortul, poti aprinde lumanarile - mergi la MC inainte de tort si ii spui ca esti gata
 **cu acest bilet poti revendica orice cadou castigat de oricine
 **cu acest bilet poti bloca revendicarea cadoului de catre alta persoana
-**cu acest bilet poti ruga band-ul sa cante ce piesa vrei');
-insert into games (name, category, instructions) values ('Fastest Baby Meal', 'Selecție invitați', 'Fastest Baby Meal
+**cu acest bilet poti ruga band-ul sa cante ce piesa vrei' where name = 'Ice breaker';
+update games set instructions = 'Fastest Baby Meal
 5 scaune
-5 sisteme - plexi gaurit + 5 body-uri de bebelusi + 5 saci mari pentru a putea sta curati');
-insert into games (name, category, instructions) values ('Masa Meselor 2', 'Necategorisit', 'obiecte random (care nu sunt de la masa lor');
-insert into games (name, category, instructions) values ('Domino', 'Necategorisit', 'Domino Game
+5 sisteme - plexi gaurit + 5 body-uri de bebelusi + 5 saci mari pentru a putea sta curati' where name = 'Fastest Baby Meal';
+update games set instructions = 'obiecte random (care nu sunt de la masa lor' where name = 'Masa Meselor 2';
+update games set instructions = 'Domino Game
 Un exercițiu antrenant de comunicare, leadership, atenție la detalii și
 muncă în echipă.
 Împărțiți în mai multe echipe, participanții trebuie să reconstruiască un
@@ -626,19 +613,10 @@ Cutie 3
 T
 S
 R
-U');
-insert into games (name, category, instructions) values ('Classic Trivia', 'Necategorisit', '10 categorii din care mirii sunt implicati - fiecare are 3 nivele de greutate - videoproiector si laptop');
-insert into games (name, category, instructions) values ('The Bible Present', 'Necategorisit', 'o masa, o biblie si markere - fiecare invitat poate sa marcheze cu markerul versete pe care sa le lase amintire mirilor');
-insert into games (name, category, instructions) values ('Crossword', 'Interactive Canvas', 'giante canvas + sevalet) - cu cuvintele din povestea mirilor');
-insert into games (name, category, instructions) values ('Find the word', 'Interactive Canvas', 'selectie de 100 de cuvinte, puse pe un canvas urias - cu marker, trebuie sa incercuiasca cuvantul gasit, si sa taie cuvantul gasit din lista');
-insert into games (name, category, instructions) values ('Marriage Mad Libs', 'Interactive Canvas', 'campuri libere de completat');
-insert into games (name, category, instructions) values ('The Sticker Puzzle', 'Interactive Canvas', 'fiecare invitat are sub scaun / sub farfurie un sticker - tip piesa puzzle pe carei l duce pe o tabla unde formeaza un tabloou cu mirii');
-insert into games (name, category, instructions) values ('Doodle yourself', 'Interactive Canvas', '');
-
-insert into inventory (name, qty) values ('Turnball', 1);
-insert into inventory (name, qty) values ('Tinta + arc + 2 sageti', 2);
-insert into inventory (name, qty) values ('Giant Jenga', 2);
-insert into inventory (name, qty) values ('CornHole', 2);
-insert into inventory (name, qty) values ('Tic-Tac-Toe', 3);
-insert into inventory (name, qty) values ('Badminton + Fileu', 1);
-insert into inventory (name, qty) values ('Tin Can Toss', 2);
+U' where name = 'Domino';
+update games set instructions = '10 categorii din care mirii sunt implicati - fiecare are 3 nivele de greutate - videoproiector si laptop' where name = 'Classic Trivia';
+update games set instructions = 'o masa, o biblie si markere - fiecare invitat poate sa marcheze cu markerul versete pe care sa le lase amintire mirilor' where name = 'The Bible Present';
+update games set instructions = 'giante canvas + sevalet) - cu cuvintele din povestea mirilor' where name = 'Crossword';
+update games set instructions = 'selectie de 100 de cuvinte, puse pe un canvas urias - cu marker, trebuie sa incercuiasca cuvantul gasit, si sa taie cuvantul gasit din lista' where name = 'Find the word';
+update games set instructions = 'campuri libere de completat' where name = 'Marriage Mad Libs';
+update games set instructions = 'fiecare invitat are sub scaun / sub farfurie un sticker - tip piesa puzzle pe carei l duce pe o tabla unde formeaza un tabloou cu mirii' where name = 'The Sticker Puzzle';
