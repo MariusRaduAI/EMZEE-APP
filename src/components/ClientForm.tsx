@@ -11,9 +11,21 @@ const emptyClient = (): Client => ({
   guests: null, notes: "", program_start: "16:00", created_at: "",
 });
 
-export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | null; onSave: (c: Client) => void; onCancel: () => void }) {
+export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | null; onSave: (c: Client) => void | Promise<void>; onCancel: () => void }) {
   const [c, setC] = useState<Client>(initial || emptyClient());
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   const set = (patch: Partial<Client>) => setC((p) => ({ ...p, ...patch }));
+
+  async function handleSave() {
+    setErr(null); setBusy(true);
+    try {
+      await onSave(c);
+    } catch (e: unknown) {
+      setErr("Nu s-a putut salva: " + (e instanceof Error ? e.message : String(e)));
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -81,9 +93,11 @@ export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | n
         <textarea className="input min-h-[80px] resize-y" value={c.notes} onChange={(e) => set({ notes: e.target.value })} placeholder="Detalii, cerințe speciale, observații…" />
       </div>
 
+      {err && <p className="text-[15px] text-rose font-semibold">{err}</p>}
+
       <div className="flex justify-end gap-2 pt-1">
-        <button className="btn" onClick={onCancel}>Anulează</button>
-        <button className="btn-brand" disabled={!c.couple.trim()} onClick={() => onSave(c)}>Salvează</button>
+        <button className="btn" onClick={onCancel} disabled={busy}>Anulează</button>
+        <button className="btn-brand" disabled={!c.couple.trim() || busy} onClick={handleSave}>{busy ? "Se salvează…" : "Salvează"}</button>
       </div>
     </div>
   );

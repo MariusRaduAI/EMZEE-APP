@@ -126,11 +126,11 @@ export default function ClientsPage() {
       </div>
 
       <Modal open={adding} onClose={() => setAdding(false)} title="Client nou" wide>
-        <ClientForm onSave={(c) => { saveClient(c); setAdding(false); }} onCancel={() => setAdding(false)} />
+        <ClientForm onSave={async (c) => { await saveClient(c); setAdding(false); }} onCancel={() => setAdding(false)} />
       </Modal>
 
       <Modal open={!!editing} onClose={() => setEditing(null)} title={`Editează · ${editing?.couple || ""}`} wide>
-        {editing && <ClientForm key={editing.id} initial={editing} onSave={(c) => { saveClient(c); setEditing(null); }} onCancel={() => setEditing(null)} />}
+        {editing && <ClientForm key={editing.id} initial={editing} onSave={async (c) => { await saveClient(c); setEditing(null); }} onCancel={() => setEditing(null)} />}
       </Modal>
 
       {node}

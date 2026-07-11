@@ -140,7 +140,7 @@ export default function ClientDetail() {
       {tab === "rentals" && <RentalsAllocator key={id} clientId={id} />}
 
       <Modal open={editing} onClose={() => setEditing(false)} title="Editează client" wide>
-        <ClientForm initial={client} onSave={(c) => { saveClient(c); setEditing(false); }} onCancel={() => setEditing(false)} />
+        <ClientForm key={client.id} initial={client} onSave={async (c) => { await saveClient(c); setEditing(false); }} onCancel={() => setEditing(false)} />
       </Modal>
     </div>
   );

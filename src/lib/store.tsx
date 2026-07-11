@@ -221,12 +221,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     };
     if (mode === "cloud") {
       const client = sb()!;
-      const { id, ...rest } = base as any;
+      // pregătim rândul pentru DB: fără id/created_at, data goală -> null (coloană de tip date)
+      const { id: _id, created_at: _ca, ...rest } = base as any;
+      const dbRow = { ...rest, event_date: base.event_date || null };
       if (c.id) {
-        await client.from("clients").update(rest).eq("id", c.id);
+        const { error } = await client.from("clients").update(dbRow).eq("id", c.id);
+        if (error) { console.error("Eroare la salvarea clientului:", error); throw new Error(error.message); }
         mutate((d) => { d.clients = d.clients.map((x) => x.id === c.id ? base : x); return d; });
       } else {
-        const { data } = await client.from("clients").insert(rest).select().single();
+        const { data, error } = await client.from("clients").insert(dbRow).select().single();
+        if (error) { console.error("Eroare la crearea clientului:", error); throw new Error(error.message); }
         const saved = (data || base) as Client;
         mutate((d) => { d.clients = [...d.clients, saved]; return d; });
         return saved;
@@ -333,9 +337,17 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     };
     if (mode === "cloud") {
       const client = sb()!;
-      const { id, ...rest } = base as any;
-      if (o.id && db.offers.some((x) => x.id === o.id)) { await client.from("offers").update(rest).eq("id", o.id); mutate((d) => { d.offers = d.offers.map((x) => x.id === o.id ? base : x); return d; }); }
-      else { const { data } = await client.from("offers").insert(rest).select().single(); const saved = (data || base) as Offer; mutate((d) => { d.offers = [...d.offers, saved]; return d; }); return saved; }
+      const { id: _id, created_at: _ca, ...rest } = base as any;
+      const dbRow = { ...rest, event_date: base.event_date || null };
+      if (o.id && db.offers.some((x) => x.id === o.id)) {
+        const { error } = await client.from("offers").update(dbRow).eq("id", o.id);
+        if (error) { console.error("Eroare la salvarea ofertei:", error); throw new Error(error.message); }
+        mutate((d) => { d.offers = d.offers.map((x) => x.id === o.id ? base : x); return d; });
+      } else {
+        const { data, error } = await client.from("offers").insert(dbRow).select().single();
+        if (error) { console.error("Eroare la crearea ofertei:", error); throw new Error(error.message); }
+        const saved = (data || base) as Offer; mutate((d) => { d.offers = [...d.offers, saved]; return d; }); return saved;
+      }
     } else {
       mutate((d) => { if (o.id && d.offers.some((x) => x.id === o.id)) d.offers = d.offers.map((x) => x.id === o.id ? base : x); else d.offers = [...d.offers, base]; return d; });
     }
