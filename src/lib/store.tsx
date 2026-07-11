@@ -5,16 +5,24 @@ import { getSupabase, SUPABASE_ENABLED } from "./supabaseClient";
 import { SEED_GAMES, SEED_INVENTORY } from "./seed";
 import { uid, nowISO } from "./utils";
 import {
-  DB, Client, Game, InventoryItem, Allocation, ProgramItem, Offer,
+  DB, Client, Game, InventoryItem, Allocation, ProgramItem, Offer, Task,
   ChecklistData, ProfileData,
 } from "./types";
 
 const LS_KEY = "emzee_db_v1";
 
+// Nu lăsăm o scriere în cloud să se blocheze la nesfârșit — dacă durează prea mult, aruncă eroare.
+async function withTimeout<T>(p: PromiseLike<T>, ms = 12000): Promise<T> {
+  return await Promise.race([
+    p as Promise<T>,
+    new Promise<T>((_, rej) => setTimeout(() => rej(new Error("Salvarea a durat prea mult. Verifică conexiunea și că proiectul Supabase e activ, apoi reîncearcă.")), ms)),
+  ]);
+}
+
 function emptyDB(): DB {
   return {
     clients: [], games: [], inventory: [], allocations: [],
-    program_items: [], offers: [], checklists: {}, profiles: {},
+    program_items: [], offers: [], tasks: [], checklists: {}, profiles: {},
   };
 }
 
@@ -51,6 +59,9 @@ interface StoreValue {
   // offers
   saveOffer: (o: Partial<Offer> & { id?: string }) => Promise<Offer>;
   deleteOffer: (id: string) => Promise<void>;
+  // tasks
+  saveTask: (t: Partial<Task> & { id?: string }) => Promise<Task>;
+  deleteTask: (id: string) => Promise<void>;
   // forms
   saveChecklist: (clientId: string, data: ChecklistData) => Promise<void>;
   saveProfile: (clientId: string, data: ProfileData) => Promise<void>;
@@ -102,6 +113,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     data.allocations = data.allocations || [];
     data.program_items = data.program_items || [];
     data.offers = data.offers || [];
+    data.tasks = data.tasks || [];
     setDb(data);
     persistLocal(data);
   }, [persistLocal]);
@@ -109,7 +121,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const loadCloud = useCallback(async () => {
     const sb = getSupabase();
     if (!sb) return;
-    const [clients, games, inventory, allocations, program_items, offers, checklists, profiles] =
+    const [clients, games, inventory, allocations, program_items, offers, tasks, checklists, profiles] =
       await Promise.all([
         sb.from("clients").select("*").order("event_date", { ascending: true }),
         sb.from("games").select("*").order("name"),
@@ -117,6 +129,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         sb.from("allocations").select("*"),
         sb.from("program_items").select("*").order("position"),
         sb.from("offers").select("*"),
+        sb.from("tasks").select("*"),
         sb.from("checklists").select("*"),
         sb.from("couple_profiles").select("*"),
       ]);
@@ -131,6 +144,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       allocations: (allocations.data || []) as Allocation[],
       program_items: (program_items.data || []) as ProgramItem[],
       offers: ((offers.data || []) as any[]).map((o) => ({ ...o, items: o.items || [] })) as Offer[],
+      tasks: (tasks.data || []) as Task[],
       checklists: clMap,
       profiles: prMap,
     });
@@ -226,11 +240,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const { id: _id, created_at: _ca, ...rest } = base as any;
       const dbRow = { ...rest, event_date: base.event_date || null };
       if (c.id) {
-        const { error } = await client.from("clients").update(dbRow).eq("id", c.id);
+        const { error } = await withTimeout(client.from("clients").update(dbRow).eq("id", c.id));
         if (error) { console.error("Eroare la salvarea clientului:", error); throw new Error(error.message); }
         mutate((d) => { d.clients = d.clients.map((x) => x.id === c.id ? base : x); return d; });
       } else {
-        const { data, error } = await client.from("clients").insert(dbRow).select().single();
+        const { data, error } = await withTimeout(client.from("clients").insert(dbRow).select().single());
         if (error) { console.error("Eroare la crearea clientului:", error); throw new Error(error.message); }
         const saved = (data || base) as Client;
         mutate((d) => { d.clients = [...d.clients, saved]; return d; });
@@ -360,6 +374,37 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     mutate((d) => { d.offers = d.offers.filter((x) => x.id !== id); return d; });
   }, [mode, mutate]);
 
+  // ---------- TASKS (întâlniri & to-do) ----------
+  const saveTask = useCallback(async (t: Partial<Task> & { id?: string }) => {
+    const base: Task = {
+      id: t.id || uid(), kind: t.kind || "todo", title: t.title || "", client_id: t.client_id ?? null,
+      meeting_type: t.meeting_type || "", date: t.date || "", time: t.time || "", done: t.done ?? false,
+      notes: t.notes || "", created_at: t.created_at || nowISO(),
+    };
+    if (mode === "cloud") {
+      const client = sb()!;
+      const { id: _id, created_at: _ca, ...rest } = base as any;
+      const dbRow = { ...rest, date: base.date || null };
+      if (t.id && db.tasks.some((x) => x.id === t.id)) {
+        const { error } = await withTimeout(client.from("tasks").update(dbRow).eq("id", t.id));
+        if (error) throw new Error(error.message);
+        mutate((d) => { d.tasks = d.tasks.map((x) => x.id === t.id ? base : x); return d; });
+      } else {
+        const { data, error } = await withTimeout(client.from("tasks").insert(dbRow).select().single());
+        if (error) throw new Error(error.message);
+        const saved = (data || base) as Task; mutate((d) => { d.tasks = [...d.tasks, saved]; return d; }); return saved;
+      }
+    } else {
+      mutate((d) => { if (t.id && d.tasks.some((x) => x.id === t.id)) d.tasks = d.tasks.map((x) => x.id === t.id ? base : x); else d.tasks = [...d.tasks, base]; return d; });
+    }
+    return base;
+  }, [mode, mutate, db.tasks]);
+
+  const deleteTask = useCallback(async (id: string) => {
+    if (mode === "cloud") await sb()!.from("tasks").delete().eq("id", id);
+    mutate((d) => { d.tasks = d.tasks.filter((x) => x.id !== id); return d; });
+  }, [mode, mutate]);
+
   // ---------- CHECKLIST / PROFILE ----------
   const saveChecklist = useCallback(async (clientId: string, data: ChecklistData) => {
     if (mode === "cloud") await sb()!.from("checklists").upsert({ client_id: clientId, data, updated_at: nowISO() });
@@ -375,7 +420,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     ready, mode, authed, userEmail, db,
     signIn, signUp, signOut,
     saveClient, deleteClient, saveGame, deleteGame, saveInventory, deleteInventory,
-    setAllocations, saveProgram, saveOffer, deleteOffer, saveChecklist, saveProfile, reload,
+    setAllocations, saveProgram, saveOffer, deleteOffer, saveTask, deleteTask, saveChecklist, saveProfile, reload,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -385,6 +430,6 @@ function structuredCloneSafe(d: DB): DB {
   return {
     clients: [...d.clients], games: [...d.games], inventory: [...d.inventory],
     allocations: [...d.allocations], program_items: [...d.program_items], offers: [...d.offers],
-    checklists: { ...d.checklists }, profiles: { ...d.profiles },
+    tasks: [...d.tasks], checklists: { ...d.checklists }, profiles: { ...d.profiles },
   };
 }

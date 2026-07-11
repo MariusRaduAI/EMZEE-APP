@@ -87,6 +87,28 @@ export interface Offer {
   created_at: string;
 }
 
+export interface Task {
+  id: string;
+  kind: "meeting" | "todo"; // întâlnire sau task personal
+  title: string;
+  client_id: string | null;
+  meeting_type: string;
+  date: string; // yyyy-mm-dd
+  time: string; // HH:MM
+  done: boolean;
+  notes: string;
+  created_at: string;
+}
+
+export const MEETING_TYPES = [
+  "Întâlnire de cunoaștere",
+  "Stabilire program",
+  "Vizită locație",
+  "Recap final",
+  "Call telefonic",
+  "Altele",
+];
+
 // Flexible JSON forms
 export type ChecklistData = Record<string, unknown>;
 export type ProfileData = Record<string, unknown>;
@@ -98,6 +120,7 @@ export interface DB {
   allocations: Allocation[];
   program_items: ProgramItem[];
   offers: Offer[];
+  tasks: Task[];
   checklists: Record<string, ChecklistData>; // by client_id
   profiles: Record<string, ProfileData>; // by client_id
 }

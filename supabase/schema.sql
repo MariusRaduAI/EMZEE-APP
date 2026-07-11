@@ -92,6 +92,20 @@ create table if not exists offers (
   created_at timestamptz default now()
 );
 
+-- ---------- TASKS (întâlniri & to-do) ----------
+create table if not exists tasks (
+  id uuid primary key default gen_random_uuid(),
+  kind text default 'todo',
+  title text default '',
+  client_id uuid references clients(id) on delete set null,
+  meeting_type text default '',
+  date date,
+  time text default '',
+  done boolean default false,
+  notes text default '',
+  created_at timestamptz default now()
+);
+
 -- ---------- CHECKLISTS (planner) ----------
 create table if not exists checklists (
   client_id uuid primary key references clients(id) on delete cascade,
@@ -115,6 +129,7 @@ alter table inventory enable row level security;
 alter table allocations enable row level security;
 alter table program_items enable row level security;
 alter table offers enable row level security;
+alter table tasks enable row level security;
 alter table checklists enable row level security;
 alter table couple_profiles enable row level security;
 
@@ -122,7 +137,7 @@ alter table couple_profiles enable row level security;
 do $$
 declare t text;
 begin
-  foreach t in array array['clients','games','inventory','allocations','program_items','offers','checklists','couple_profiles']
+  foreach t in array array['clients','games','inventory','allocations','program_items','offers','tasks','checklists','couple_profiles']
   loop
     execute format('drop policy if exists "auth_all" on %I;', t);
     execute format('create policy "auth_all" on %I for all to authenticated using (true) with check (true);', t);

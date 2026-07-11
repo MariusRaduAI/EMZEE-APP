@@ -10,6 +10,7 @@ import { cx } from "@/lib/utils";
 const NAV = [
   { href: "/dashboard", label: "Panou principal", icon: Icon.dashboard },
   { href: "/calendar", label: "Calendar", icon: Icon.calendar },
+  { href: "/agenda", label: "Agenda (întâlniri & to-do)", icon: Icon.agenda },
   { href: "/clients", label: "Clienți", icon: Icon.users },
   { href: "/reports", label: "Rapoarte", icon: Icon.chart },
   { href: "/games", label: "Banca de jocuri", icon: Icon.games },
