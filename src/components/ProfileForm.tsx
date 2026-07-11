@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { Icon } from "./ui";
-import { cx } from "@/lib/utils";
+import { cx, downloadCSV } from "@/lib/utils";
+import { exportProfilePDF } from "@/lib/pdf";
 
 const DYNAMICS = ["Super traditional", "Traditional", "Echilibrat", "Hype", "Super hype"];
 const PRIORITIES = ["Multă emoție", "Multă distracție", "Multă închinare", "Implicarea invitaților", "Experiență echilibrată"];
@@ -13,6 +14,7 @@ type P = Record<string, any>;
 
 export function ProfileForm({ clientId }: { clientId: string }) {
   const { db, saveProfile } = useStore();
+  const client = db.clients.find((c) => c.id === clientId);
   const [d, setD] = useState<P>(db.profiles[clientId] || defaults());
   const [dirty, setDirty] = useState(false);
 
@@ -23,10 +25,36 @@ export function ProfileForm({ clientId }: { clientId: string }) {
   const ages = d.ages || { copii: 10, tineri: 45, adulti: 30, seniori: 15 };
   const ageTotal = ages.copii + ages.tineri + ages.adulti + ages.seniori;
 
+  function exportExcel() {
+    downloadCSV(`profil-${client?.couple || "eveniment"}.csv`, [
+      ["Câmp", "Valoare"],
+      ["Miri", client?.couple || ""],
+      ["Data", client?.event_date || ""],
+      ["Locație", client?.venue || client?.city || ""],
+      ["Dinamica dorită", d.dynamic || ""],
+      ["Priorități", (d.priorities || []).join(", ")],
+      ["Tipuri jocuri", (d.game_styles || []).join(", ")],
+      ["Note stil", d.style_notes || ""],
+      ["Nr. invitați", d.guests ?? ""],
+      ["Nr. copii", d.children ?? ""],
+      ["Cupluri %", d.couples_pct ?? 60],
+      ["Singuri %", 100 - (d.couples_pct ?? 60)],
+      ["Creștini %", d.christian_pct ?? 70],
+      ["Necreștini %", 100 - (d.christian_pct ?? 70)],
+      ["Vârste — Copii %", ages.copii], ["Vârste — Tineri %", ages.tineri],
+      ["Vârste — Adulți %", ages.adulti], ["Vârste — Seniori %", ages.seniori],
+      ["Origine invitați", d.origin || ""],
+      ["Schiță așezare", d.has_seating || ""],
+      ["Listă invitați", d.has_list || ""],
+      ["Nume invitați", String(d.guest_list || "").split("\n").filter(Boolean).join(" | ")],
+    ]);
+  }
+
   return (
     <div>
-      <div className="no-print flex items-center justify-end gap-2 mb-4">
-        <button className="btn" onClick={() => window.print()}><Icon.print /> PDF</button>
+      <div className="no-print flex flex-wrap items-center justify-end gap-2 mb-4">
+        <button className="btn" onClick={exportExcel}><Icon.download /> Excel</button>
+        <button className="btn" onClick={() => exportProfilePDF(client, d)}><Icon.download /> PDF</button>
         <button className={cx("btn-brand", !dirty && "opacity-60")} onClick={save}><Icon.check /> {dirty ? "Salvează" : "Salvat"}</button>
       </div>
 

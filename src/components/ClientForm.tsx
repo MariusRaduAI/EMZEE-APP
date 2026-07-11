@@ -20,7 +20,7 @@ export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | n
   async function handleSave() {
     setErr(null); setBusy(true);
     try {
-      await onSave(c);
+      await onSave({ ...c, currency: "RON" });
     } catch (e: unknown) {
       setErr("Nu s-a putut salva: " + (e instanceof Error ? e.message : String(e)));
       setBusy(false);
@@ -62,16 +62,11 @@ export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | n
           <label className="label">Nr. invitați (estimativ)</label>
           <input className="input" type="number" value={c.guests ?? ""} onChange={(e) => set({ guests: e.target.value ? Number(e.target.value) : null })} placeholder="ex. 150" />
         </div>
-        <div className="grid grid-cols-[1fr_auto] gap-2">
-          <div>
-            <label className="label">Fee</label>
-            <input className="input" type="number" value={c.fee ?? ""} onChange={(e) => set({ fee: e.target.value ? Number(e.target.value) : null })} placeholder="ex. 1500" />
-          </div>
-          <div>
-            <label className="label">Monedă</label>
-            <select className="input !w-24" value={c.currency} onChange={(e) => set({ currency: e.target.value })}>
-              <option>RON</option><option>EUR</option>
-            </select>
+        <div>
+          <label className="label">Fee (lei)</label>
+          <div className="relative">
+            <input className="input pr-12" type="number" value={c.fee ?? ""} onChange={(e) => set({ fee: e.target.value ? Number(e.target.value) : null })} placeholder="ex. 1500" />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-faint">RON</span>
           </div>
         </div>
       </div>

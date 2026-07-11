@@ -124,7 +124,6 @@ export function OfferBuilder({ initial, onSaved }: { initial: Offer; onSaved?: (
             <span className="font-semibold text-lg">Total</span>
             <span className="font-bold text-2xl text-brand-soft tabular-nums">{money(total, o.currency)}</span>
           </div>
-          <div className="flex items-center gap-2 mt-2"><span className="text-xs text-muted">Monedă</span><select className="input !py-1 !w-24" value={o.currency} onChange={(e) => set({ currency: e.target.value })}><option>RON</option><option>EUR</option></select></div>
         </div>
       </div>
 
