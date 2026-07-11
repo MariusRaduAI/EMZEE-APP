@@ -12,6 +12,28 @@ export default function InventoryPage() {
   const { db, saveInventory, deleteInventory } = useStore();
   const { confirm, node } = useConfirm();
   const [editing, setEditing] = useState<InventoryItem | null>(null);
+  const [checkDate, setCheckDate] = useState<string>(new Date().toISOString().slice(0, 10));
+
+  // rezervat pe data aleasă (sumă alocări pt clienți cu event_date === checkDate)
+  const reservedOn = useMemo(() => {
+    const clientIds = new Set(db.clients.filter((c) => c.event_date === checkDate).map((c) => c.id));
+    const m: Record<string, number> = {};
+    db.allocations.forEach((a) => { if (clientIds.has(a.client_id)) m[a.inventory_id] = (m[a.inventory_id] || 0) + a.qty; });
+    return m;
+  }, [db.allocations, db.clients, checkDate]);
+
+  // toate rezervările viitoare (pentru listă)
+  const upcoming = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const rows: { item: string; couple: string; date: string; qty: number }[] = [];
+    db.allocations.forEach((a) => {
+      const c = db.clients.find((x) => x.id === a.client_id);
+      const it = db.inventory.find((x) => x.id === a.inventory_id);
+      if (!c || !it || !c.event_date || c.event_date < today) return;
+      rows.push({ item: it.name, couple: c.couple, date: c.event_date, qty: a.qty });
+    });
+    return rows.sort((x, y) => x.date.localeCompare(y.date));
+  }, [db.allocations, db.clients, db.inventory]);
 
   // usage per item: list of upcoming events using it
   const usage = useMemo(() => {
@@ -32,6 +54,54 @@ export default function InventoryPage() {
       <PageHeader title="Inventar & Rentals" subtitle="Ce ai pe stoc și când e ocupat la evenimente." icon={<Icon.box />}>
         <button className="btn-brand" onClick={() => setEditing({ id: "", name: "", qty: 1, notes: "" })}><Icon.plus /> Articol nou</button>
       </PageHeader>
+
+      {/* Verificare disponibilitate pe dată */}
+      <div className="card p-5 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+          <div className="flex items-center gap-2">
+            <Icon.calendar className="text-brand-soft" />
+            <span className="font-bold text-ink">Disponibilitate la data</span>
+          </div>
+          <input className="input !w-44" type="date" value={checkDate} onChange={(e) => setCheckDate(e.target.value)} />
+          <span className="text-sm text-muted">Ce ai liber ca să poți răspunde rapid.</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[420px]">
+            <thead><tr className="border-b border-line">
+              <th className="th">Articol</th><th className="th text-center">Stoc</th><th className="th text-center">Rezervat</th><th className="th text-center">Liber</th>
+            </tr></thead>
+            <tbody className="divide-y divide-line/50">
+              {db.inventory.map((it) => {
+                const res = reservedOn[it.id] || 0;
+                const free = it.qty - res;
+                return (
+                  <tr key={it.id}>
+                    <td className="td font-medium">{it.name}</td>
+                    <td className="td text-center text-muted">{it.qty}</td>
+                    <td className="td text-center">{res > 0 ? <span className="font-semibold text-amber">{res}</span> : <span className="text-faint">0</span>}</td>
+                    <td className="td text-center">
+                      <span className={cx("badge", free <= 0 ? "bg-rose/15 text-rose" : "bg-green/15 text-green")}>{free <= 0 ? "Ocupat" : `${free} liber${free === 1 ? "" : "e"}`}</span>
+                    </td>
+                  </tr>
+                );
+              })}
+              {db.inventory.length === 0 && <tr><td colSpan={4} className="td text-center text-muted py-6">Niciun articol în inventar.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+        {upcoming.length > 0 && (
+          <div className="mt-5 pt-4 border-t border-line">
+            <p className="section-title mb-2">Rezervări viitoare</p>
+            <div className="flex flex-wrap gap-2">
+              {upcoming.slice(0, 12).map((r, i) => (
+                <span key={i} className="badge bg-panel2 border border-line text-muted">
+                  <b className="text-ink">{r.item}</b> ×{r.qty} · {r.couple} · {fmtDateShort(r.date)}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {db.inventory.map((it) => {
@@ -80,7 +150,7 @@ export default function InventoryPage() {
         </div>
       )}
 
-      <p className="text-sm text-muted mt-6">💡 Rezervi echipamente pentru un eveniment din pagina clientului → tab <Link href="/clients" className="text-brand-soft">Rentals</Link>.</p>
+      <p className="text-sm text-muted mt-6">Aloci echipamente unui eveniment din pagina clientului → tab <Link href="/clients" className="text-brand-soft">Rentals</Link>. Aici vezi rapid ce e liber pe orice dată.</p>
 
       {editing && <InvEditor key={editing.id || "new"} item={editing} onClose={() => setEditing(null)} onSave={(x) => { saveInventory(x); setEditing(null); }} />}
     </div>
