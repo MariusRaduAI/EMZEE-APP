@@ -83,7 +83,7 @@ export function Sidebar() {
 function Brand() {
   return (
     <Link href="/dashboard" className="flex items-center">
-      <Logo className="h-9 w-auto text-ink" />
+      <Logo mark className="h-7" />
     </Link>
   );
 }
