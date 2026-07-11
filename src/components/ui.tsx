@@ -51,14 +51,14 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 overflow-y-auto no-print" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-6 no-print" onMouseDown={onClose}>
       <div className="fixed inset-0 bg-black/45" />
-      <div className={cx("relative card w-full my-2 sm:my-6 fade-in", wide ? "max-w-6xl" : "max-w-3xl")} onMouseDown={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-line">
+      <div className={cx("relative card w-full flex flex-col max-h-[94dvh] fade-in", wide ? "max-w-6xl" : "max-w-3xl")} onMouseDown={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0">
           <h3 className="font-bold text-ink text-lg">{title}</h3>
           <button className="btn-ghost !p-1.5" onClick={onClose}><Icon.close /></button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

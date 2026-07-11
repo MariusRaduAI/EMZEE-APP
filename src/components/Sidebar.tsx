@@ -9,7 +9,7 @@ import { useStore } from "@/lib/store";
 import { cx } from "@/lib/utils";
 
 const NAV: { href: string; label: string; icon: (p: { className?: string }) => React.ReactNode; badge?: string }[] = [
-  { href: "/dashboard", label: "Panou principal", icon: Icon.dashboard },
+  { href: "/dashboard", label: "Dashboard", icon: Icon.dashboard },
   { href: "/calendar", label: "Calendar", icon: Icon.calendar },
   { href: "/todo", label: "To Do", icon: Icon.agenda },
   { href: "/clients", label: "Clienți", icon: Icon.users },

@@ -64,7 +64,7 @@ export default function CorporatePage() {
         <h3 className="section-title mb-3">Metodologia EMZEE (referință)</h3>
         <p className="text-[15px] text-ink mb-4">HR vrea engagement, managerii vor coeziune, directorii vor să arate că le pasă de oameni. <b className="text-teal">EMZEE este soluția.</b> Un apel → propunere în 48h → livrăm tot → raport post-eveniment.</p>
         <div className="grid sm:grid-cols-3 gap-3">
-          {[["La birou", "799 €", "2-3 ore · 2 activități · MC inclus"], ["Team-building 1 zi", "1.599 €", "3 activități · scavenger hunt · raport"], ["Program 3 zile", "8.000–10.000 €", "diagnostic · KPI · MC + facilitare"]].map(([n, p, d]) => (
+          {[["La birou", "599 €", "3 ore · 2 activități"], ["Team-building 1 zi", "1.199 €", "Scavenger hunt · jocuri mari · raport (+ cazare & masă dacă e cazul)"], ["Program 3 zile intensiv", "2.199 €", "3 zile intensiv · MC + facilitare · raport"]].map(([n, p, d]) => (
             <div key={n} className="card-2 p-4">
               <p className="font-bold text-ink">{n}</p>
               <p className="text-xl font-black text-teal my-1">{p}</p>
