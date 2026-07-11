@@ -4,22 +4,18 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 
 export function LoginScreen() {
-  const { signIn, signUp } = useStore();
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const { signIn } = useStore();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [info, setInfo] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setErr(null); setInfo(null); setBusy(true);
-    const fn = mode === "in" ? signIn : signUp;
-    const msg = await fn(email.trim(), pw);
+    setErr(null); setBusy(true);
+    const msg = await signIn(email.trim(), pw);
     setBusy(false);
-    if (msg) { setErr(msg); return; }
-    if (mode === "up") setInfo("Cont creat. Dacă e nevoie, confirmă emailul, apoi autentifică-te.");
+    if (msg) setErr(translate(msg));
   }
 
   return (
@@ -34,26 +30,26 @@ export function LoginScreen() {
         <form onSubmit={submit} className="card p-6 space-y-4">
           <div>
             <label className="label">Email</label>
-            <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="office@wle.ro" />
+            <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="office@wle.ro" autoFocus />
           </div>
           <div>
             <label className="label">Parolă</label>
-            <input className="input" type="password" required minLength={6} value={pw} onChange={(e) => setPw(e.target.value)} placeholder="••••••••" />
+            <input className="input" type="password" required value={pw} onChange={(e) => setPw(e.target.value)} placeholder="••••••••" />
           </div>
           {err && <p className="text-sm text-rose">{err}</p>}
-          {info && <p className="text-sm text-green">{info}</p>}
           <button className="btn-brand w-full" disabled={busy}>
-            {busy ? "Se procesează…" : mode === "in" ? "Autentificare" : "Creează cont"}
+            {busy ? "Se procesează…" : "Autentificare"}
           </button>
-          <p className="text-center text-sm text-muted">
-            {mode === "in" ? "Prima dată aici? " : "Ai deja cont? "}
-            <button type="button" className="text-brand-soft font-medium hover:underline" onClick={() => { setMode(mode === "in" ? "up" : "in"); setErr(null); setInfo(null); }}>
-              {mode === "in" ? "Creează cont" : "Autentifică-te"}
-            </button>
-          </p>
         </form>
-        <p className="text-center text-xs text-faint mt-4">Datele tale sunt private, protejate în Supabase.</p>
+        <p className="text-center text-xs text-faint mt-4">Aplicație privată · datele tale protejate în Supabase.</p>
       </div>
     </div>
   );
+}
+
+function translate(msg: string): string {
+  const m = msg.toLowerCase();
+  if (m.includes("invalid login")) return "Email sau parolă greșite.";
+  if (m.includes("email not confirmed")) return "Emailul nu e confirmat. Vezi setările Supabase (dezactivează „Confirm email").";
+  return msg;
 }
