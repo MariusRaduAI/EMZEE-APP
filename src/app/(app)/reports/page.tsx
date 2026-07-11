@@ -56,6 +56,22 @@ export default function ReportsPage() {
     cl.forEach((c) => { const l = (c.venue || c.city || "").trim(); if (l) locMap[l] = (locMap[l] || 0) + 1; });
     const topLoc = Object.entries(locMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
 
+    // year-over-year growth (creștere an-la-an)
+    const yoy = years.map((y, i) => {
+      const cur = byYear[y];
+      const prev = i > 0 ? byYear[years[i - 1]] : null;
+      const cg = prev && prev.count ? Math.round(((cur.count - prev.count) / prev.count) * 100) : null;
+      const rg = prev && prev.revenue ? Math.round(((cur.revenue - prev.revenue) / prev.revenue) * 100) : null;
+      return { y, count: cur.count, revenue: cur.revenue, cg, rg };
+    });
+
+    // cities map (harta orașelor) — grupat strict pe oraș
+    const cityMap: Record<string, { count: number; revenue: number }> = {};
+    cl.forEach((c) => { const ci = (c.city || "").trim(); if (ci) { (cityMap[ci] ||= { count: 0, revenue: 0 }); cityMap[ci].count++; cityMap[ci].revenue += c.fee || 0; } });
+    const cities = Object.entries(cityMap).map(([city, v]) => ({ city, ...v })).sort((a, b) => b.count - a.count);
+    const cityTotal = cities.reduce((s, c) => s + c.count, 0);
+    const maxCity = Math.max(...cities.map((c) => c.count), 1);
+
     // repeat families
     const famMap: Record<string, number> = {};
     cl.forEach((c) => { const f = c.family.trim(); if (f) famMap[f] = (famMap[f] || 0) + 1; });
@@ -78,6 +94,7 @@ export default function ReportsPage() {
       past: cl.filter((c) => c.event_date && c.event_date < todayISO).length,
       byYear, years, byMonth, svc, status, topLoc, repeatFam, n,
       bestYear, bestRevYear, busiestMonthIdx, biggest,
+      yoy, cities, cityTotal, maxCity,
     };
   }, [db.clients]);
 
@@ -200,12 +217,74 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Idea box */}
-      <div className="card p-5 mt-6 border-dashed">
-        <h3 className="section-title mb-2">Idei de rapoarte viitoare</h3>
-        <p className="text-sm text-muted">Pot adăuga: comparație an-la-an (creștere %), rată de conversie lead→confirmat, prognoză venit pe baza rezervărilor, hartă a orașelor, sezon plin vs. gol, venit pe tip de serviciu (flori vs. MC vs. rentals), timp mediu de la ofertă la confirmare. Spune-mi care te interesează.</p>
+      {/* Creștere an-la-an + Harta orașelor */}
+      <div className="grid lg:grid-cols-2 gap-6 mt-6">
+        <div className="card p-5">
+          <h3 className="section-title mb-4">Creștere an-la-an</h3>
+          {R.yoy.length < 2 ? (
+            <p className="text-sm text-muted">Ai nevoie de evenimente în cel puțin 2 ani calendaristici ca să vezi creșterea.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-faint text-xs uppercase tracking-wide">
+                    <th className="text-left font-semibold pb-2">An</th>
+                    <th className="text-right font-semibold pb-2">Evenimente</th>
+                    <th className="text-right font-semibold pb-2">Δ</th>
+                    <th className="text-right font-semibold pb-2">Venit</th>
+                    <th className="text-right font-semibold pb-2">Δ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {R.yoy.map((r) => (
+                    <tr key={r.y} className="border-t border-line/60">
+                      <td className="py-2 font-semibold text-ink tabular-nums">{r.y}</td>
+                      <td className="py-2 text-right text-ink tabular-nums">{r.count}</td>
+                      <td className="py-2 text-right"><Growth pct={r.cg} /></td>
+                      <td className="py-2 text-right text-ink tabular-nums">{money(r.revenue, "RON")}</td>
+                      <td className="py-2 text-right"><Growth pct={r.rg} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="card p-5">
+          <h3 className="section-title mb-4">Harta orașelor</h3>
+          {R.cities.length ? (
+            <div className="space-y-3">
+              {R.cities.map((c) => {
+                const pct = Math.round((c.count / (R.cityTotal || 1)) * 100);
+                return (
+                  <div key={c.city}>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-ink font-medium truncate">{c.city}</span>
+                      <span className="text-muted tabular-nums shrink-0 ml-2">{c.count} · {pct}% · {money(c.revenue, "RON")}</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-panel2 overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${Math.max((c.count / R.maxCity) * 100, 4)}%`, background: "#33d6c4" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : <p className="text-sm text-muted">Adaugă orașul la clienți ca să vezi distribuția pe orașe.</p>}
+        </div>
       </div>
     </div>
+  );
+}
+
+function Growth({ pct }: { pct: number | null }) {
+  if (pct == null) return <span className="text-faint tabular-nums">—</span>;
+  if (pct === 0) return <span className="text-muted tabular-nums">0%</span>;
+  const up = pct > 0;
+  return (
+    <span className={cx("inline-flex items-center gap-0.5 font-semibold tabular-nums", up ? "text-green" : "text-rose")}>
+      {up ? "▲" : "▼"} {Math.abs(pct)}%
+    </span>
   );
 }
 
