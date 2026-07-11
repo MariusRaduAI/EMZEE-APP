@@ -79,13 +79,13 @@ export const SEED_GAMES: Omit<Game, 'id'>[] = [
 ];
 
 export const SEED_INVENTORY: Omit<InventoryItem, 'id'>[] = [
-  { name: "Turnball", qty: 1, notes: '' },
-  { name: "Tinta + arc + 2 sageti", qty: 2, notes: '' },
-  { name: "Giant Jenga", qty: 2, notes: '' },
-  { name: "CornHole", qty: 2, notes: '' },
-  { name: "Tic-Tac-Toe", qty: 3, notes: '' },
-  { name: "Badminton + Fileu", qty: 1, notes: '' },
-  { name: "Tin Can Toss", qty: 2, notes: '' },
+  { name: "Turnball", qty: 1, notes: '', category: 'jocuri' },
+  { name: "Tinta + arc + 2 sageti", qty: 2, notes: '', category: 'jocuri' },
+  { name: "Giant Jenga", qty: 2, notes: '', category: 'jocuri' },
+  { name: "CornHole", qty: 2, notes: '', category: 'jocuri' },
+  { name: "Tic-Tac-Toe", qty: 3, notes: '', category: 'jocuri' },
+  { name: "Badminton + Fileu", qty: 1, notes: '', category: 'jocuri' },
+  { name: "Tin Can Toss", qty: 2, notes: '', category: 'jocuri' },
 ];
 
 export const GAME_CATEGORIES: string[] = [

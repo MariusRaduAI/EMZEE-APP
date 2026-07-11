@@ -3,13 +3,26 @@
 import { useState } from "react";
 import { Client, ClientStatus } from "@/lib/types";
 import { Toggle } from "./ui";
+import { cx } from "@/lib/utils";
 
 const emptyClient = (): Client => ({
   id: "", couple: "", family: "", event_date: "", city: "", venue: "", fee: null,
   currency: "RON", status: "lead", svc_mc: true, svc_program: false, svc_games: false,
   svc_flowers: false, svc_kids: false, svc_rentals: false, svc_corporate: false,
-  guests: null, notes: "", program_start: "16:00", created_at: "",
+  guests: null, deposit: null, paid: null, notes: "", program_start: "16:00", created_at: "",
 });
+
+function MoneyField({ label, value, onChange, placeholder }: { label: string; value: number | null; onChange: (v: number | null) => void; placeholder?: string }) {
+  return (
+    <div>
+      <label className="label">{label}</label>
+      <div className="relative">
+        <input className="input pr-12" type="number" value={value ?? ""} onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)} placeholder={placeholder} />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-faint">RON</span>
+      </div>
+    </div>
+  );
+}
 
 export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | null; onSave: (c: Client) => void | Promise<void>; onCancel: () => void }) {
   const [c, setC] = useState<Client>(initial || emptyClient());
@@ -62,14 +75,19 @@ export function ClientForm({ initial, onSave, onCancel }: { initial?: Client | n
           <label className="label">Nr. invitați (estimativ)</label>
           <input className="input" type="number" value={c.guests ?? ""} onChange={(e) => set({ guests: e.target.value ? Number(e.target.value) : null })} placeholder="ex. 150" />
         </div>
-        <div>
-          <label className="label">Fee (lei)</label>
-          <div className="relative">
-            <input className="input pr-12" type="number" value={c.fee ?? ""} onChange={(e) => set({ fee: e.target.value ? Number(e.target.value) : null })} placeholder="ex. 1500" />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-faint">RON</span>
-          </div>
-        </div>
+        <MoneyField label="Fee total (lei)" value={c.fee} onChange={(v) => set({ fee: v })} placeholder="ex. 1500" />
+        <MoneyField label="Avans convenit" value={c.deposit} onChange={(v) => set({ deposit: v })} placeholder="ex. 500" />
+        <MoneyField label="Încasat până acum" value={c.paid} onChange={(v) => set({ paid: v })} placeholder="ex. 500" />
       </div>
+
+      {(c.fee || c.paid || c.deposit) && (
+        <div className="card-2 p-3 flex items-center justify-between text-sm">
+          <span className="text-muted">Rest de încasat</span>
+          <span className={cx("font-bold text-base", (c.fee || 0) - (c.paid || 0) <= 0 ? "text-green" : "text-amber")}>
+            {((c.fee || 0) - (c.paid || 0)).toLocaleString("ro-RO")} RON
+          </span>
+        </div>
+      )}
 
       <div>
         <label className="label">Servicii incluse</label>

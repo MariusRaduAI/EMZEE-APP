@@ -111,6 +111,25 @@ export default function ClientDetail() {
               <InfoRow label="Invitați" value={client.guests ?? "—"} />
               <InfoRow label="Fee" value={money(client.fee, client.currency)} />
             </div>
+            <div className="card p-5">
+              <h3 className="section-title mb-4">Plăți & cashflow</h3>
+              {(() => {
+                const fee = client.fee || 0, paid = client.paid || 0, rest = fee - paid;
+                const pct = fee > 0 ? Math.min(100, Math.round((paid / fee) * 100)) : 0;
+                return (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                      <MoneyStat label="Fee total" value={fee} />
+                      <MoneyStat label="Avans convenit" value={client.deposit || 0} />
+                      <MoneyStat label="Încasat" value={paid} accent="green" />
+                      <MoneyStat label="Rest de încasat" value={rest} accent={rest <= 0 ? "green" : "amber"} />
+                    </div>
+                    <div className="h-2.5 rounded-full bg-panel2 overflow-hidden"><div className="h-full bg-green transition-all" style={{ width: `${pct}%` }} /></div>
+                    <p className="text-sm text-muted mt-1.5">{pct}% încasat{rest <= 0 && fee > 0 ? " · plătit integral ✓" : ""}</p>
+                  </>
+                );
+              })()}
+            </div>
             {client.notes && (
               <div className="card p-5"><h3 className="section-title mb-2">Note</h3><p className="text-sm text-ink/90 whitespace-pre-wrap">{client.notes}</p></div>
             )}
@@ -145,6 +164,17 @@ export default function ClientDetail() {
       <Modal open={editing} onClose={() => setEditing(false)} title="Editează client" wide>
         <ClientForm key={client.id} initial={client} onSave={async (c) => { await saveClient(c); setEditing(false); }} onCancel={() => setEditing(false)} />
       </Modal>
+    </div>
+  );
+}
+
+function MoneyStat({ label, value, accent }: { label: string; value: number; accent?: "green" | "amber" }) {
+  return (
+    <div className="card-2 p-3">
+      <p className="text-[13px] text-muted">{label}</p>
+      <p className={cx("text-lg font-bold tabular-nums mt-0.5", accent === "green" ? "text-green" : accent === "amber" ? "text-amber" : "text-ink")}>
+        {value.toLocaleString("ro-RO")} <span className="text-sm font-semibold text-faint">RON</span>
+      </p>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
 import { PageHeader } from "@/components/common";
 import { Icon, Modal, useConfirm } from "@/components/ui";
-import { InventoryItem } from "@/lib/types";
+import { InventoryItem, INVENTORY_CATEGORIES } from "@/lib/types";
 import { fmtDateShort, cx } from "@/lib/utils";
 
 export default function InventoryPage() {
@@ -13,6 +13,8 @@ export default function InventoryPage() {
   const { confirm, node } = useConfirm();
   const [editing, setEditing] = useState<InventoryItem | null>(null);
   const [checkDate, setCheckDate] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [catFilter, setCatFilter] = useState<string>("");
+  const shownInventory = catFilter ? db.inventory.filter((it) => (it.category || "jocuri") === catFilter) : db.inventory;
 
   // rezervat pe data aleasă (sumă alocări pt clienți cu event_date === checkDate)
   const reservedOn = useMemo(() => {
@@ -52,7 +54,7 @@ export default function InventoryPage() {
     <div className="fade-in">
       {node}
       <PageHeader title="Inventar & Rentals" subtitle="Ce ai pe stoc și când e ocupat la evenimente." icon={<Icon.box />}>
-        <button className="btn-brand" onClick={() => setEditing({ id: "", name: "", qty: 1, notes: "" })}><Icon.plus /> Articol nou</button>
+        <button className="btn-brand" onClick={() => setEditing({ id: "", name: "", qty: 1, notes: "", category: catFilter || "jocuri" })}><Icon.plus /> Articol nou</button>
       </PageHeader>
 
       {/* Verificare disponibilitate pe dată */}
@@ -103,14 +105,23 @@ export default function InventoryPage() {
         )}
       </div>
 
+      {/* Filtru pe categorii */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button className={cx("chip", !catFilter ? "bg-brand/15 border-brand/40 text-brand-soft" : "border-line text-muted hover:text-ink")} onClick={() => setCatFilter("")}>Toate <span className="text-faint">{db.inventory.length}</span></button>
+        {INVENTORY_CATEGORIES.map((c) => {
+          const n = db.inventory.filter((it) => (it.category || "jocuri") === c.key).length;
+          return <button key={c.key} className={cx("chip", catFilter === c.key ? "bg-brand/15 border-brand/40 text-brand-soft" : "border-line text-muted hover:text-ink")} onClick={() => setCatFilter(catFilter === c.key ? "" : c.key)}>{c.label} <span className="text-faint">{n}</span></button>;
+        })}
+      </div>
+
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {db.inventory.map((it) => {
+        {shownInventory.map((it) => {
           const uses = usage[it.id] || [];
           const upcomingQty = uses[0]?.qty || 0;
           return (
             <div key={it.id} className="card p-5 group">
               <div className="flex items-start justify-between mb-3">
-                <span className="w-10 h-10 rounded-xl bg-brand/12 border border-brand/25 flex items-center justify-center text-brand-soft"><Icon.box /></span>
+                <span className={cx("w-10 h-10 rounded-xl border flex items-center justify-center", (it.category || "jocuri") === "flori" ? "bg-rose/12 border-rose/25 text-rose" : "bg-brand/12 border-brand/25 text-brand-soft")}>{(it.category || "jocuri") === "flori" ? <Icon.flower /> : <Icon.box />}</span>
                 <div className="flex items-center gap-1">
                   <button className="btn-ghost !p-1.5" onClick={() => setEditing(it)}><Icon.edit /></button>
                   <button className="btn-ghost !p-1.5 hover:!text-rose" onClick={async () => { if (await confirm(`Ștergi „${it.name}”?`)) deleteInventory(it.id); }}><Icon.trash /></button>
@@ -146,7 +157,7 @@ export default function InventoryPage() {
       {db.inventory.length === 0 && (
         <div className="card p-12 text-center">
           <p className="text-sm text-muted mb-3">Inventarul e gol.</p>
-          <button className="btn-brand mx-auto" onClick={() => setEditing({ id: "", name: "", qty: 1, notes: "" })}><Icon.plus /> Adaugă primul articol</button>
+          <button className="btn-brand mx-auto" onClick={() => setEditing({ id: "", name: "", qty: 1, notes: "", category: catFilter || "jocuri" })}><Icon.plus /> Adaugă primul articol</button>
         </div>
       )}
 
@@ -162,8 +173,15 @@ function InvEditor({ item, onClose, onSave }: { item: InventoryItem; onClose: ()
   return (
     <Modal open onClose={onClose} title={x.id ? "Editează articol" : "Articol nou"}>
       <div className="space-y-4">
-        <div><label className="label">Denumire</label><input className="input" value={x.name} onChange={(e) => setX({ ...x, name: e.target.value })} placeholder="ex. Giant Jenga" autoFocus /></div>
-        <div><label className="label">Cantitate în stoc</label><input className="input" type="number" min={0} value={x.qty} onChange={(e) => setX({ ...x, qty: Number(e.target.value) || 0 })} /></div>
+        <div><label className="label">Denumire</label><input className="input" value={x.name} onChange={(e) => setX({ ...x, name: e.target.value })} placeholder="ex. Giant Jenga / Vază înaltă / Arcadă pătrată" autoFocus /></div>
+        <div className="grid grid-cols-2 gap-3">
+          <div><label className="label">Categorie</label>
+            <select className="input" value={x.category || "jocuri"} onChange={(e) => setX({ ...x, category: e.target.value })}>
+              {INVENTORY_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+            </select>
+          </div>
+          <div><label className="label">Cantitate în stoc</label><input className="input" type="number" min={0} value={x.qty} onChange={(e) => setX({ ...x, qty: Number(e.target.value) || 0 })} /></div>
+        </div>
         <div><label className="label">Note</label><input className="input" value={x.notes} onChange={(e) => setX({ ...x, notes: e.target.value })} placeholder="detalii, stare, etc." /></div>
         <div className="flex justify-end gap-2"><button className="btn" onClick={onClose}>Anulează</button><button className="btn-brand" disabled={!x.name.trim()} onClick={() => onSave(x)}>Salvează</button></div>
       </div>

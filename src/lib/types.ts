@@ -18,6 +18,8 @@ export interface Client {
   svc_rentals: boolean;
   svc_corporate: boolean;
   guests: number | null;
+  deposit: number | null; // avans convenit
+  paid: number | null;    // total încasat
   notes: string;
   program_start: string; // "16:00" (fallback)
   program_starts?: Record<string, string>; // ora de start per fază
@@ -37,7 +39,14 @@ export interface InventoryItem {
   name: string;
   qty: number;
   notes: string;
+  category: string; // "jocuri" | "flori" | "altele"
 }
+
+export const INVENTORY_CATEGORIES = [
+  { key: "jocuri", label: "Jocuri & Rentals" },
+  { key: "flori", label: "Flori & Decor" },
+  { key: "altele", label: "Altele" },
+];
 
 export interface Allocation {
   id: string;

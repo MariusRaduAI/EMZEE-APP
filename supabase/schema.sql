@@ -26,6 +26,8 @@ create table if not exists clients (
   svc_rentals boolean default false,
   svc_corporate boolean default false,
   guests integer,
+  deposit numeric,
+  paid numeric,
   notes text default '',
   program_start text default '16:00',
   program_starts jsonb default '{}'::jsonb,
@@ -48,8 +50,13 @@ create table if not exists inventory (
   name text not null,
   qty integer default 1,
   notes text default '',
+  category text default 'jocuri',
   created_at timestamptz default now()
 );
+-- Migrări:
+alter table clients add column if not exists deposit numeric;
+alter table clients add column if not exists paid numeric;
+alter table inventory add column if not exists category text default 'jocuri';
 
 -- ---------- ALLOCATIONS (rezervări inventar per eveniment) ----------
 create table if not exists allocations (

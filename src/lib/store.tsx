@@ -242,7 +242,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       fee: c.fee ?? null, currency: c.currency || "RON", status: c.status || "lead",
       svc_mc: c.svc_mc ?? true, svc_program: c.svc_program ?? false, svc_games: c.svc_games ?? false,
       svc_flowers: c.svc_flowers ?? false, svc_kids: c.svc_kids ?? false, svc_rentals: c.svc_rentals ?? false,
-      svc_corporate: c.svc_corporate ?? false, guests: c.guests ?? null, notes: c.notes || "",
+      svc_corporate: c.svc_corporate ?? false, guests: c.guests ?? null,
+      deposit: c.deposit ?? null, paid: c.paid ?? null, notes: c.notes || "",
       program_start: c.program_start || "16:00", program_starts: c.program_starts || {},
       created_at: c.created_at || nowISO(),
     };
@@ -304,7 +305,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   // ---------- INVENTORY ----------
   const saveInventory = useCallback(async (i: Partial<InventoryItem> & { id?: string }) => {
-    const base: InventoryItem = { id: i.id || uid(), name: i.name || "Articol nou", qty: i.qty ?? 1, notes: i.notes || "" };
+    const base: InventoryItem = { id: i.id || uid(), name: i.name || "Articol nou", qty: i.qty ?? 1, notes: i.notes || "", category: i.category || "jocuri" };
     if (mode === "cloud") {
       const client = sb()!;
       const { id, ...rest } = base as any;
