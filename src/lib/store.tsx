@@ -311,7 +311,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   // ---------- INVENTORY ----------
   const saveInventory = useCallback(async (i: Partial<InventoryItem> & { id?: string }) => {
-    const base: InventoryItem = { id: i.id || uid(), name: i.name || "Articol nou", qty: i.qty ?? 1, notes: i.notes || "", category: i.category || "jocuri" };
+    const base: InventoryItem = { id: i.id || uid(), name: i.name || "Articol nou", qty: i.qty ?? 1, notes: i.notes || "", category: i.category || "jocuri", cost: i.cost ?? null };
     if (mode === "cloud") {
       const client = sb()!;
       const { id, ...rest } = base as any;

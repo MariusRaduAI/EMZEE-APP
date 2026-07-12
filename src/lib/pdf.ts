@@ -736,7 +736,7 @@ export function exportPackingPDF(client: { couple: string; event_date: string; v
   doc.setFillColor(...C.teal);
   doc.rect(0, 0, PAGE_W, 40, "F");
   doc.setFont(FONT, "bold"); doc.setFontSize(8); doc.setTextColor(200, 240, 236);
-  doc.text("L I S T Ă   D E   A M B A L A R E   &   R E T U R", M, 14);
+  doc.text("C H E C K L I S T   I N V E N T A R   ·   L U A T   /   R E T U R", M, 14);
   doc.setFontSize(20); doc.setTextColor(...C.white);
   doc.text(client?.couple || "Eveniment", M, 26);
   doc.setFont(FONT, "normal"); doc.setFontSize(9.5); doc.setTextColor(210, 240, 237);
@@ -805,7 +805,7 @@ export function exportPackingPDF(client: { couple: string; event_date: string; v
   }
 
   footer(doc);
-  doc.save(`ambalare-${(client?.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
+  doc.save(`checklist-inventar-${(client?.couple || "eveniment").replace(/[^\w& -]/g, "")}.pdf`);
 }
 
 interface CorpLike { company: string; contact: string; email: string; phone: string; date: string; participants: number | null; format: string[]; objectives: string[]; activities: string[]; location: string; catering: string; budget: number | null; deadline: string; notes: string; }

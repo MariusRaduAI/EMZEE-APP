@@ -150,7 +150,7 @@ export default function ClientDetail() {
                 <button className="navlink w-full" onClick={() => setTab("checklist")}><Icon.check className="w-4 h-4 text-faint" /> Checklist</button>
                 <button className="navlink w-full" onClick={() => setTab("offer")}><Icon.offer className="w-4 h-4 text-faint" /> Ofertă</button>
                 <button className="navlink w-full" onClick={() => setTab("contract")}><Icon.contract className="w-4 h-4 text-faint" /> Contract</button>
-                <button className="navlink w-full" onClick={() => setTab("rentals")}><Icon.box className="w-4 h-4 text-faint" /> Rentals & listă ambalare</button>
+                <button className="navlink w-full" onClick={() => setTab("rentals")}><Icon.box className="w-4 h-4 text-faint" /> Rentals & checklist inventar</button>
               </div>
             </div>
           </div>

@@ -52,12 +52,15 @@ create table if not exists inventory (
   qty integer default 1,
   notes text default '',
   category text default 'jocuri',
+  cost numeric,
   created_at timestamptz default now()
 );
 -- Migrări:
 alter table clients add column if not exists deposit numeric;
 alter table clients add column if not exists paid numeric;
 alter table inventory add column if not exists category text default 'jocuri';
+alter table inventory add column if not exists cost numeric;
+alter table games add column if not exists materials text default '';
 
 -- ---------- ALLOCATIONS (rezervări inventar per eveniment) ----------
 create table if not exists allocations (

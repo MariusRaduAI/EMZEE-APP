@@ -47,7 +47,7 @@ export function RentalsAllocator({ clientId }: { clientId: string }) {
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <p className="text-sm text-muted">Rezervă echipamente pentru acest eveniment{client?.event_date ? "" : " (setează o dată pentru verificare disponibilitate)"}.</p>
         <div className="flex items-center gap-2">
-          <button className="btn" onClick={packing} disabled={totalItems === 0} title={totalItems === 0 ? "Alocă articole mai întâi" : "Listă de ambalare printabilă"}><Icon.print /> Listă ambalare</button>
+          <button className="btn" onClick={packing} disabled={totalItems === 0} title={totalItems === 0 ? "Alocă articole mai întâi" : "Checklist inventar printabil pentru acest eveniment"}><Icon.print /> Checklist inventar</button>
           <button className={cx("btn-brand", !dirty && "opacity-60")} onClick={save}><Icon.check /> {dirty ? "Salvează" : "Salvat"}</button>
         </div>
       </div>
@@ -72,13 +72,13 @@ export function RentalsAllocator({ clientId }: { clientId: string }) {
             </div>
           );
         })}
-        {db.inventory.length === 0 && <p className="text-sm text-muted text-center py-6">Niciun articol în inventar. Adaugă din pagina Inventar & Rentals.</p>}
+        {db.inventory.length === 0 && <p className="text-sm text-muted text-center py-6">Niciun articol în inventar. Adaugă din pagina Inventar.</p>}
       </div>
 
       <div className="card-2 p-4 mt-4">
-        <label className="label">Articole suplimentare pentru listă (câte unul pe rând)</label>
-        <textarea className="input min-h-[70px] resize-y" value={extras} onChange={(e) => setExtras(e.target.value)} placeholder={"Prelungitoare\nBandă adezivă\nTrusă de rezervă"} />
-        <p className="text-xs text-faint mt-1.5">Apar în lista de ambalare, separat de inventar. Bifezi pe hârtie „Luat" și „Retur" pentru fiecare.</p>
+        <label className="label">De luat cu mine la acest eveniment (câte unul pe rând)</label>
+        <textarea className="input min-h-[90px] resize-y" value={extras} onChange={(e) => setExtras(e.target.value)} placeholder={"Prelungitoare\nBandă adezivă\nTrusă de rezervă\nBonuri / contract\nÎncărcătoare"} />
+        <p className="text-xs text-faint mt-1.5">Scrie orice ai nevoie special pentru acest eveniment — apar în checklist separat de inventar. Bifezi pe hârtie „Luat" și „Retur" pentru fiecare.</p>
       </div>
     </div>
   );

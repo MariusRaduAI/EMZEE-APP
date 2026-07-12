@@ -41,6 +41,7 @@ export interface InventoryItem {
   qty: number;
   notes: string;
   category: string; // "jocuri" | "flori" | "altele"
+  cost?: number | null; // cost unitar (RON) — pentru valoarea inventarului
 }
 
 export const INVENTORY_CATEGORIES = [
