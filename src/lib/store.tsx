@@ -292,7 +292,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   // ---------- GAMES ----------
   const saveGame = useCallback(async (g: Partial<Game> & { id?: string }) => {
-    const base: Game = { id: g.id || uid(), name: g.name || "Joc nou", category: g.category || "Necategorisit", instructions: g.instructions || "", favorite: g.favorite ?? false };
+    const base: Game = { id: g.id || uid(), name: g.name || "Joc nou", category: g.category || "Necategorisit", instructions: g.instructions || "", materials: g.materials || "", favorite: g.favorite ?? false };
     if (mode === "cloud") {
       const client = sb()!;
       const { id, ...rest } = base as any;

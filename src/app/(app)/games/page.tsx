@@ -34,7 +34,7 @@ export default function GamesPage() {
     <div className="fade-in">
       {node}
       <PageHeader title="Banca de jocuri" subtitle={`${db.games.length} jocuri · clic pe un joc pentru instrucțiuni`} icon={<Icon.games />}>
-        <button className="btn-brand" onClick={() => setEditing({ id: "", name: "", category: "Necategorisit", instructions: "", favorite: false })}><Icon.plus /> Joc nou</button>
+        <button className="btn-brand" onClick={() => setEditing({ id: "", name: "", category: "Necategorisit", instructions: "", materials: "", favorite: false })}><Icon.plus /> Joc nou</button>
       </PageHeader>
 
       {/* Search + filters */}
@@ -63,12 +63,13 @@ export default function GamesPage() {
       {/* Table */}
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px]">
+          <table className="w-full min-w-[680px]">
             <thead>
               <tr className="border-b border-line">
                 <th className="th w-10"></th>
                 <th className="th">Nume joc</th>
                 <th className="th">Categorie</th>
+                <th className="th">Materiale necesare</th>
                 <th className="th w-24 text-right">Acțiuni</th>
               </tr>
             </thead>
@@ -85,6 +86,7 @@ export default function GamesPage() {
                     {g.instructions && <Icon.chevron className="inline w-3.5 h-3.5 ml-1 text-faint" />}
                   </td>
                   <td className="td"><span className="badge bg-panel2 border border-line text-muted">{g.category || "—"}</span></td>
+                  <td className="td text-sm text-muted max-w-[220px] truncate">{g.materials || <span className="text-faint">—</span>}</td>
                   <td className="td text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button className="btn-ghost !p-1.5" onClick={(e) => { e.stopPropagation(); setEditing(g); }}><Icon.edit /></button>
@@ -113,6 +115,14 @@ export default function GamesPage() {
                 <p className="text-sm text-ink/90 leading-relaxed whitespace-pre-wrap card-2 p-4">{detail.instructions}</p>
               ) : (
                 <p className="text-sm text-muted card-2 p-4">Nu există instrucțiuni încă. <button className="text-brand-soft" onClick={() => { setEditing(detail); setDetail(null); }}>Adaugă →</button></p>
+              )}
+            </div>
+            <div>
+              <p className="section-title mb-2">Materiale necesare</p>
+              {detail.materials ? (
+                <p className="text-sm text-ink/90 leading-relaxed whitespace-pre-wrap card-2 p-4">{detail.materials}</p>
+              ) : (
+                <p className="text-sm text-muted card-2 p-4">Nespecificat.</p>
               )}
             </div>
             <div className="flex justify-end gap-2 pt-2">
@@ -156,7 +166,11 @@ function GameEditor({ game, onClose, onSave, categories }: { game: Game; onClose
         </div>
         <div>
           <label className="label">Instrucțiuni</label>
-          <textarea className="input min-h-[160px] resize-y" value={g.instructions} onChange={(e) => setG({ ...g, instructions: e.target.value })} placeholder="Cum se joacă, materiale necesare, reguli, punctaj…" />
+          <textarea className="input min-h-[160px] resize-y" value={g.instructions} onChange={(e) => setG({ ...g, instructions: e.target.value })} placeholder="Cum se joacă, reguli, punctaj…" />
+        </div>
+        <div>
+          <label className="label">Materiale necesare</label>
+          <textarea className="input min-h-[80px] resize-y" value={g.materials || ""} onChange={(e) => setG({ ...g, materials: e.target.value })} placeholder="ex. microfon, 4 scaune, coli A4, marker, premii mici…" />
         </div>
         <div className="flex items-center justify-between pt-2">
           <button className={cx("btn", g.favorite && "!text-brand-soft !border-brand/40")} onClick={() => setG({ ...g, favorite: !g.favorite })}>

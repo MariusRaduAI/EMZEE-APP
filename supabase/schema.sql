@@ -40,6 +40,7 @@ create table if not exists games (
   name text not null,
   category text default '',
   instructions text default '',
+  materials text default '',
   favorite boolean default false,
   created_at timestamptz default now()
 );

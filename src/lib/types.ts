@@ -31,6 +31,7 @@ export interface Game {
   name: string;
   category: string;
   instructions: string;
+  materials?: string; // materiale necesare
   favorite: boolean;
 }
 
